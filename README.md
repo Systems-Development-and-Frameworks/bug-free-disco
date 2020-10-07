@@ -7,6 +7,12 @@
   <img src="https://media.giphy.com/media/HmCGTfgQy1dYI/giphy.gif" alt="homework" width="50%">
 <p>
 
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+
 ## Homework - Exercise #0
 
 1. Find team members to groups of 2-3 people. Together, come up with a team name (Team names must be url-safe). We will setup a team on Github and Moodle for you. Kudos for a team name with a corresponding emoji. 
@@ -35,3 +41,19 @@ commits of the original repository.
 Do not submit lengthy pull request. Pull requests with a large `diff` in
 `Files changed` tab are difficult to review. If you want to get good feedback on
 your pull requests, don't push unrelated changes.
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links 
+https://github.com/Systems-Development-and-Frameworks/bug-free-disco
+-->
+
+[contributors-shield]: https://img.shields.io/github/contributors/Systems-Development-and-Frameworks/bug-free-disco?style=flat-square
+[contributors-url]: https://github.com/Systems-Development-and-Frameworks/bug-free-disco/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/Systems-Development-and-Frameworks/bug-free-disco?style=flat-square
+[forks-url]: https://github.com/Systems-Development-and-Frameworks/bug-free-disco/network/members
+[stars-shield]: https://img.shields.io/github/stars/Systems-Development-and-Frameworks/bug-free-disco?style=flat-square
+[stars-url]: https://github.com/Systems-Development-and-Frameworks/bug-free-disco/stargazers
+[issues-shield]: https://img.shields.io/github/issues/Systems-Development-and-Frameworks/bug-free-disco?style=flat-square
+[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
+[license-shield]: https://img.shields.io/github/license/Systems-Development-and-Frameworks/bug-free-disco?style=flat-square
+[license-url]: https://github.com/Systems-Development-and-Frameworks/bug-free-disco/LICENSE.txt
