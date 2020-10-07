@@ -5,7 +5,7 @@ at `Hochschule für Technik und Wirtschaft` in Berlin.
 
 
 <p align="center">
-  <img src="https://media.giphy.com/media/dNgK7Ws7y176U/giphy.gif" alt="homework" width="50%">
+  <img src="https://media.giphy.com/media/HmCGTfgQy1dYI/giphy.gif" alt="homework" width="50%">
 <p>
 
 ## Homework - Exercise #0
