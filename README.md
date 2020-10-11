@@ -27,6 +27,7 @@ Contributions are what make the open source community such an amazing place to b
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b origin/exercice-0`)
+3. Stage/Add your changes (`git add .`)
 3. Commit your Changes (`git commit -m 'Add some features to exercice-0'`)
 4. Push to the Branch (`git push origin origin/exercice-0`)
 5. Open a Pull Request
@@ -66,6 +67,6 @@ https://github.com/Systems-Development-and-Frameworks/bug-free-disco
 [stars-shield]: https://img.shields.io/github/stars/Systems-Development-and-Frameworks/bug-free-disco?style=flat-square
 [stars-url]: https://github.com/Systems-Development-and-Frameworks/bug-free-disco/stargazers
 [issues-shield]: https://img.shields.io/github/issues/Systems-Development-and-Frameworks/bug-free-disco?style=flat-square
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
+[issues-url]: https://github.com/Systems-Development-and-Frameworks/bug-free-disco/issues
 [license-shield]: https://img.shields.io/github/license/Systems-Development-and-Frameworks/bug-free-disco?style=flat-square
 [license-url]: https://github.com/Systems-Development-and-Frameworks/bug-free-disco/blob/exercise-0/LICENSE.txt
