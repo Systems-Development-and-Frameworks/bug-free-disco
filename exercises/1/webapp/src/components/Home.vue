@@ -87,7 +87,6 @@ export default {
           this.newsList[newsId].votes = newsVotes + voteChange
         }
         else {
-          console.warn("News with title (" + newsTitle + ") not founded in the list of news")
         }
       },
       newsRemoveMessage(newsTitle){
