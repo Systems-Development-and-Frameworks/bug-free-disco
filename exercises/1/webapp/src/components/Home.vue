@@ -4,7 +4,7 @@
       <div class="news-list-wrapper">
         <h1>{{msg}}</h1>
         <div class="news-holder" v-for="(newsContent, index) in sortedNewsList" :key="index">
-          <News :newsTitle="newsContent.title" :newsBody="newsContent.body" :newsVotes="newsContent.votes" @updateItem="mewsUpdateMessage" @removeItem="newsRemoveMessage"/>
+          <News :news="news" @updateItem="mewsUpdateMessage" @removeItem="newsRemoveMessage"/>
         </div>
       </div>
       <form @submit.prevent="checkForm">
