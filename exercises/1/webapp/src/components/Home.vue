@@ -116,7 +116,7 @@ export default {
         this.newNews.body = ""
       },
       checkForm: function (e) {
-        if (this.newNews.title && this.newNews.title != '' && !this.newsInNewsList(this.newNews.title)) {
+        if (this.newNews.title && !this.newsInNewsList(this.newNews.title)) {
           this.add()
           this.errors = []
           return true
