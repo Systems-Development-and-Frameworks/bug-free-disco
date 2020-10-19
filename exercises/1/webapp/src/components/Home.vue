@@ -135,7 +135,7 @@ export default {
         e.preventDefault();
       },
       newsInNewsList(newsTitle) {
-        const newsId = this.newsList.findIndex((item) => item.title == newsTitle)
+        return this.newsList.map(n => n.title).includes(newsTitle)
         if (newsId != -1) return true
         return false
       }
