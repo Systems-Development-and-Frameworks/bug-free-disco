@@ -31,7 +31,7 @@ export default {
         }
     },
     methods: {
-        checkForm: function (e) {
+        checkForm(e) {
             if (this.news.title && !this.newsInNewsList(this.news.title)) {
                 this.errors = []
                 this.$emit('createItem', this.news)
