@@ -84,7 +84,6 @@ export default {
       mewsUpdateMessage(newsTitle, newsVotes, voteChange){
         const newsId = this.newsList.findIndex((item) => item.title == newsTitle)
         if (newsId != -1) {
-          console.log("New Update Message from Child (" + newsId + "), Votes: " + (newsVotes + voteChange))
           this.newsList[newsId].votes = newsVotes + voteChange
         }
         else {
