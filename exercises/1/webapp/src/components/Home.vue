@@ -136,8 +136,7 @@ export default {
       },
       newsInNewsList(newsTitle) {
         const newsId = this.newsList.findIndex((item) => item.title == newsTitle)
-        if (newsId != -1)
-          return true
+        if (newsId != -1) return true
         return false
       }
   },
