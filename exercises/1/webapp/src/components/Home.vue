@@ -74,11 +74,7 @@ export default {
     sortedNewsList: function() {
       // Sort by votes
       const compare = function (a, b) {
-        if (a.votes < b.votes)
-          return 1
-        if (a.votes > b.votes)
-          return -1
-        return 0
+  return b.votes - a.votes
       }
       const arrayClone = Array.from(this.newsList)
       return arrayClone.sort(compare)
