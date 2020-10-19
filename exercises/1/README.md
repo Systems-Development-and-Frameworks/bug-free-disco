@@ -19,6 +19,22 @@ Hacker News is a social news website focusing on computer science and entreprene
 This is how the result should look like:
 
 
+
+Implement a prototype using VueJS which contains:
+
+:star: A list that renders a number of news items
+- The initial list can be hard-coded
+- Each item has a `title` and `votes`, the latter are 0 initially.
+
+:star: Each item has a button to remove itself
+- The item should not remove itself from the DOM but tell its parent component to do so.
+
+:star: Each item has buttons to downvote or upvote itself, respectively
+- Each item `$emit('update', item)` the updated item
+- The parent component updates the list when an item is updated
+
+:star: Below the list is a form to add new items to the list
+- Prevent the default behaviour of a `<form>` html element which would execute a HTTP reque
 <p align="center">
   <img src="images/demo.gif" alt="Demo" width="50%">
 <p>
@@ -36,23 +52,7 @@ Put your code somewhere in this repository. We suggest a monorepo approch with a
 
 Each star gives one point if implemented satisfactorily.
 
-:star: First of all, push new commits from `main` branch of the [homework repository](https://github.com/Systems-Development-and-Frameworks/homework/) to your team repository.
-
-Implement a prototype using VueJS which contains:
-
-:star: A list that renders a number of news items
-- The initial list can be hard-coded
-- Each item has a `title` and `votes`, the latter are 0 initially.
-
-:star: Each item has a button to remove itself
-- The item should not remove itself from the DOM but tell its parent component to do so.
-
-:star: Each item has buttons to downvote or upvote itself, respectively
-- Each item `$emit('update', item)` the updated item
-- The parent component updates the list when an item is updated
-
-:star: Below the list is a form to add new items to the list
-- Prevent the default behaviour of a `<form>` html element which would execute a HTTP request on submit.
+:star: First of all, push new commits from `main` branch of the [homework repository](https://github.com/Systems-Development-and-Frameworks/homework/) to your team repository.st on submit.
 
 Make sure that your prototype has these properties:
 
