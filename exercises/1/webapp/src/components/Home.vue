@@ -106,8 +106,7 @@ export default {
             "votes" : 0
           }
         )
-        this.newNews.title = ""
-        this.newNews.body = ""
+        this.newNews = { title: '', body: '' }
       },
       checkForm: function (e) {
         if (this.newNews.title && !this.newsInNewsList(this.newNews.title)) {
