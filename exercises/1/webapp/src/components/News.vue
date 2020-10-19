@@ -1,7 +1,7 @@
 <template>
     <div>
-        <h1 class="text-danger">{{newsTitle}}({{newsVotes}})</h1>
-        <p>{{newsBody}}</p>
+        <h1 class="text-danger">{{news.title}}({{news.votes}})</h1>
+        <p>{{news.body}}</p>
         <button @click="upVote"> Upvote </button><button @click="downVote"> Downvote </button><button @click="remove"> Remove </button>
     </div>
 </template>
@@ -10,30 +10,22 @@
 export default {
     name: "News",
     props: {
-        newsTitle: {
-            type: String,
-            required: false,
-            default: ''
-        },
-        newsBody: {
-            type: String,
-            required: false,
-            default: ''
-        },
-        newsVotes: {
-            type: Number
+        news: {
+            title: '', body: '', votes: 0
         }
     },
 
     methods: {
         upVote(){
-            this.$emit('updateItem', this.newsTitle, this.newsVotes, 1)
+            this.news.votes +=1
+            this.$emit('updateItem', this.news.title, this.news.votes)
         },
         downVote(){
-            this.$emit('updateItem', this.newsTitle, this.newsVotes, -1)
+            this.news.votes -=1
+            this.$emit('updateItem', this.news.title, this.news.votes)
         },
         remove(){
-          this.$emit('removeItem', this.newsTitle)
+          this.$emit('removeItem', this.news.title)
         }
     }
 }
