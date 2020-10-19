@@ -64,7 +64,7 @@ export default {
   computed: {
     sortedNewsList: function() {
       // Sort by votes
-      function compare(a, b) {
+      const compare = function (a, b) {
         return b.votes - a.votes
       }
       const arrayClone = Array.from(this.newsList)
@@ -77,8 +77,7 @@ export default {
           if (item.title == newsTitle) item.votes = newsVotes
           
           return item
-        })
-      },
+        })      },
       newsRemoveMessage(newsTitle){
         this.newsList = this.newsList.filter((item) => item.title != newsTitle)
       },
