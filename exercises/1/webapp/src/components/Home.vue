@@ -73,7 +73,7 @@ export default {
   computed: {
     sortedNewsList: function() {
       // Sort by votes
-      function compare(a, b) {
+      const compare = function (a, b) {
         if (a.votes < b.votes)
           return 1
         if (a.votes > b.votes)
