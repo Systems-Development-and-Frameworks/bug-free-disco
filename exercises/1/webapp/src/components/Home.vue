@@ -74,7 +74,7 @@ export default {
   methods: {
       newsUpdateMessage(newsTitle, newsVotes){
         this.newsList = this.newsList.map((item) => {
-          if (item.title == newsTitle) item.votes = newsVotes
+          if (item.title == newsTitle) return {...item, votes: newsVotes}
           
           return item
         })      },
