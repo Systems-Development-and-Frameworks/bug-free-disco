@@ -1,5 +1,5 @@
 import { shallowMount } from "@vue/test-utils";
-import News from "@/components/News.vue";
+import News from "@/components/News/News.vue";
 
 describe("News.vue", () => {
   it("renders title", () => {

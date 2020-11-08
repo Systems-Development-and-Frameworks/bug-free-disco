@@ -1,7 +1,7 @@
 import { shallowMount } from "@vue/test-utils";
 import { mount } from "@vue/test-utils";
-import Home from "@/components/Home.vue";
-import News from "@/components/News.vue";
+import Home from "@/components/Home/Home.vue";
+import News from "@/components/News/News.vue";
 
 describe("Home.vue", () => {
   let newsList = [];
