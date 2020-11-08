@@ -23,8 +23,8 @@
 </template>
 
 <script>
-import News from "./News.vue";
-import NewsForm from "./NewsForm.vue";
+import News from "../News/News.vue";
+import NewsForm from "../NewsForm/NewsForm.vue";
 
 const SortOrder = {
   ASCENDING: 0,
