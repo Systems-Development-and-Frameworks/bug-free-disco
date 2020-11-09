@@ -1,4 +1,4 @@
-// News.stories.js
+// NewsForm.stories.js
 
 import NewsForm from "./NewsForm";
 
