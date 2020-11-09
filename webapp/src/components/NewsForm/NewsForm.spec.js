@@ -5,8 +5,8 @@ describe("NewsForm.vue", () => {
   it("check error for missing title", () => {
     const wrapper = shallowMount(NewsForm, {
       propsData: {
-        newsList: [],
-      },
+        newsList: []
+      }
     });
 
     const button = wrapper.find("button");
@@ -21,17 +21,17 @@ describe("NewsForm.vue", () => {
         newsList: [
           {
             title: "TestTitle",
-            body: "",
-          },
-        ],
-      },
+            body: ""
+          }
+        ]
+      }
     });
 
     wrapper.setData({
       news: {
         title: "TestTitle",
-        body: "",
-      },
+        body: ""
+      }
     });
 
     const button = wrapper.find("button");
