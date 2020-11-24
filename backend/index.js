@@ -1,6 +1,12 @@
 import Server from './server'
 
-const server = new Server()
+
+const playground = {
+  settings: {
+    'schema.polling.enable': false
+  }
+}
+const server = new Server({ playground })
 
 // The `listen` method launches a web server.
 server.listen().then(({ url }) => {

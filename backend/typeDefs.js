@@ -9,6 +9,7 @@ type Post {
   id: ID!
   title: String!
   votes: Int!
+  voters: [User!]
   author: User!
 }
 
@@ -27,12 +28,14 @@ type Mutation {
   # 🚀 OPTIONAL
   # delete(id: ID!): Post
 
+  createUser(user: UserInput!): User
+
   # ⚠️ FIXME in exercise #4
   # mock voter until we have authentication
   upvote(id: ID!, voter: UserInput!): Post
 
   # 🚀 OPTIONAL
-  # downvote(id: ID!, voter: UserInput!): Post
+  downvote(id: ID!, voter: UserInput!): Post
 }
 
 input PostInput {
