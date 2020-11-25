@@ -4,5 +4,6 @@
 * [Exercise #1 - Solution (HackerNews)](./1//webapp/README.md)
 * [Exercise #2](./2/README.md)
 * [Exercise #3](./3/README.md)
+* [Exercise #4](./4/README.md)
 
 
