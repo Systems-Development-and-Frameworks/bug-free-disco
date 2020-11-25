@@ -3,19 +3,19 @@ import { UserInputError } from 'apollo-server';
 import crypto from 'crypto'
 
 export class Post {
-    constructor(data, author) {
-        this.title = data.post.title
+    constructor(data) {
+        this.title = data.title
         this.votes = 0
         this.voters = []
         this.id = crypto.randomBytes(16).toString('hex')
-        this.author = author
+        this.author = data.author
     }
 }
 
 export class User {
     constructor(data) {
         this.posts = []
-        Object.assign(this, data.user)
+        this.name = data.name
     }
 }
 
@@ -32,8 +32,11 @@ export class MyDataSource extends DataSource {
         if (author == null) {
             throw new UserInputError("This username doesn't exist")
         }
+        
+        const newPost = new Post({
+            title: data.post.title,
+            author: author})
 
-        const newPost = new Post(data, author)
         author.posts.push(newPost)
         this.posts.push(newPost)
         return newPost
@@ -43,7 +46,7 @@ export class MyDataSource extends DataSource {
         if (this.users.some(user => user.name === data.user.name)) {
             throw new UserInputError("This username already exists")
         }
-        const newUser = new User(data)
+        const newUser = new User({name: data.user.name})
         this.users.push(newUser)
         return newUser
     }

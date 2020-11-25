@@ -3,9 +3,12 @@ import typeDefs from './typeDefs'
 import { Post, MyDataSource, User } from './db'
 
 const db = new MyDataSource()
-db.users = [db.createUser({ user: { name: "Peter" } })]
-db.posts = [db.createPost({ post: { title: "Test", author: { name: "Peter" } } })]
 
+const newPost = new Post({ title: 'Test' })
+db.posts = [newPost]
+const newUser = new User({name: 'Peter'})
+newUser.posts.push(newPost)
+db.users = [newUser]
 
 const dataSources = () => ({ db })
 
