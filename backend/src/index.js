@@ -1,6 +1,5 @@
 import Server from './server'
 
-
 const playground = {
   settings: {
     'schema.polling.enable': false
