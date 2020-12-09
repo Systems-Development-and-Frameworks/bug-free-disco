@@ -14,7 +14,9 @@ type Post {
 }
 
 type User {
-  name: ID!
+  id: ID!
+  name: String!
+  email: String!
   posts: [Post]
 }
 
@@ -25,29 +27,26 @@ type Query {
 
 type Mutation {
   write(post: PostInput!): Post
+  upvote(id: ID!): Post
   # 🚀 OPTIONAL
-  # delete(id: ID!): Post
-
-  createUser(user: UserInput!): User
-
-  # ⚠️ FIXME in exercise #4
-  # mock voter until we have authentication
-  upvote(id: ID!, voter: UserInput!): Post
-
+  downvote(id: ID!): Post
   # 🚀 OPTIONAL
-  downvote(id: ID!, voter: UserInput!): Post
+  delete(id: ID!): Post
+
+  """
+  returns a signed JWT or null
+  """
+
+  login(email: String!, password: String!): String
+
+  """
+  returns a signed JWT or null
+  """
+  signup(name: String!, email: String!, password: String!): String
 }
 
 input PostInput {
   title: String!
-
-  # ⚠️ FIXME in exercise #4
-  # mock author until we have authentication
-  author: UserInput!
-}
-
-input UserInput {
-  name: String!
 }
 `
 
