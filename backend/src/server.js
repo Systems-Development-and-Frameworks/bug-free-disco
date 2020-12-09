@@ -1,48 +1,28 @@
 import { ApolloServer } from 'apollo-server'
+import { makeExecutableSchema } from 'graphql-tools'
+import { applyMiddleware } from 'graphql-middleware'
 import typeDefs from './typeDefs'
-import { Post, MyDataSource, User } from './db'
+import { resolvers } from './resolvers'
+import { UserDataSource } from './datasources/userDatasource'
+import { PostDataSource } from './datasources/postDatasource'
+import { permissions } from './utils/permissionHandler'
 
-const db = new MyDataSource()
+const userdb = new UserDataSource()
+const postdb = new PostDataSource()
 
-const newPost = new Post({ title: 'Test' })
-db.posts = [newPost]
-const newUser = new User({ name: 'Peter' })
-newUser.posts.push(newPost)
-db.users = [newUser]
-
-const dataSources = () => ({ db })
+const dataSources = () => ({ userdb, postdb })
 
 const context = ({ req, res }) => ({ req, res })
 
-const resolvers = {
-  Query: {
-    // listallposts
-    posts: (parent, args, context) => context.dataSources.db.posts,
-    // listallusers
-    users: (parent, args, context) => context.dataSources.db.users
-  },
-  Mutation: {
-    // create a post
-    write (parent, args, context) {
-      return context.dataSources.db.createPost(args)
-    },
-
-    // create a user
-    createUser (parent, args, context) {
-      return context.dataSources.db.createUser(args)
-    },
-
-    upvote: (parent, args, context) => context.dataSources.db.upvote(args),
-
-    downvote: (parent, args, context) => context.dataSources.db.downvote(args)
-  }
-}
+const schema = applyMiddleware(
+  makeExecutableSchema({ typeDefs, resolvers }),
+  permissions
+)
 
 export default class Server {
   constructor (opts) {
     const defaults = {
-      typeDefs,
-      resolvers,
+      schema,
       dataSources,
       context
     }
