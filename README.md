@@ -1,18 +1,36 @@
 # Systems Development and Frameworks - 2020/21
 
-This is the homework repository of course `Systems Development and Frameworks`
-at `Hochschule für Technik und Wirtschaft` in Berlin.
+Welcome to the team Bug-Free-Disco
 
 
 <p align="center">
-  <img src="https://media.giphy.com/media/dNgK7Ws7y176U/giphy.gif" alt="homework" width="50%">
+  <img src="https://media.giphy.com/media/HmCGTfgQy1dYI/giphy.gif" alt="homework" width="50%">
 <p>
 
-## Homework - Exercise #0
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
 
-1. Find team members to groups of 2-3 people. Together, come up with a team name (Team names must be url-safe). We will setup a team on Github and Moodle for you. Kudos for a team name with a corresponding emoji. 
-2. Make a copy of this repository (using a second remote). Ensure that each member of your team has sufficient access. :star:
-3. Replace the content of this `README.md` with your individual content. Here's a Github [README.md template](https://github.com/othneildrew/Best-README-Template) and there are more [awesome READMEs](https://github.com/matiassingers/awesome-readme) out there. :star:
+<!-- Homework THE PROJECT -->
+## Homework - Exercises #0, 1, 2, 3, 4, 5, 6
+The following repository contains solutions of all homeworks of our team in the course **Systems Development and Frameworks - 2020/21**.
+
+<!-- ABOUT THE PROJECT -->
+## About us
+We are a team of dynamic developpers and are proud to be part of global open source coummunity.
+<!-- CONTRIBUTING -->
+## Contributing
+
+Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b origin/exercice-0`)
+3. Stage/Add your changes (`git add .`)
+3. Commit your Changes (`git commit -m 'Add some features to exercice-0'`)
+4. Push to the Branch (`git push origin origin/exercice-0`)
+5. Open a Pull Request
 
 You can also have a look on the community checklist to get inspiration:
 
@@ -36,3 +54,19 @@ commits of the original repository.
 Do not submit lengthy pull request. Pull requests with a large `diff` in
 `Files changed` tab are difficult to review. If you want to get good feedback on
 your pull requests, don't push unrelated changes.
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links 
+https://github.com/Systems-Development-and-Frameworks/bug-free-disco
+-->
+
+[contributors-shield]: https://img.shields.io/github/contributors/Systems-Development-and-Frameworks/bug-free-disco?style=flat-square
+[contributors-url]: https://github.com/Systems-Development-and-Frameworks/bug-free-disco/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/Systems-Development-and-Frameworks/bug-free-disco?style=flat-square
+[forks-url]: https://github.com/Systems-Development-and-Frameworks/bug-free-disco/network/members
+[stars-shield]: https://img.shields.io/github/stars/Systems-Development-and-Frameworks/bug-free-disco?style=flat-square
+[stars-url]: https://github.com/Systems-Development-and-Frameworks/bug-free-disco/stargazers
+[issues-shield]: https://img.shields.io/github/issues/Systems-Development-and-Frameworks/bug-free-disco?style=flat-square
+[issues-url]: https://github.com/Systems-Development-and-Frameworks/bug-free-disco/issues
+[license-shield]: https://img.shields.io/github/license/Systems-Development-and-Frameworks/bug-free-disco?style=flat-square
+[license-url]: https://github.com/Systems-Development-and-Frameworks/bug-free-disco/blob/exercise-0/LICENSE.txt
