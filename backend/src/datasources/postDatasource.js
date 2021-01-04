@@ -48,6 +48,18 @@ export class PostDataSource extends DataSource {
   }
 
   async getAll () {
+    this.posts = []
+    const session = this.context.driver.session()
+    const txc = session.beginTransaction()
+    try {
+      const result = await txc.run('MATCH(p:Post) RETURN p')
+      await txc.commit()
+      result.records.forEach(r => this.posts.push(r.get(0).properties))
+    } catch (error) {
+      console.log(error)
+    } finally {
+      await session.close()
+    }
     return this.posts
   }
 

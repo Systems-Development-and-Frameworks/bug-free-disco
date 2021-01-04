@@ -45,6 +45,20 @@ export class UserDataSource extends DataSource {
   }
 
   async getAll () {
+    this.users = []
+
+    const session = this.context.driver.session()
+    const txc = session.beginTransaction()
+    try {
+      const result = await txc.run('MATCH(u:User) RETURN u')
+      await txc.commit()
+      result.records.forEach(r => this.users.push(r.get(0).properties))
+    } catch (error) {
+      console.log(error)
+    } finally {
+      await session.close()
+    }
+
     return this.users
   }
 
@@ -56,6 +70,8 @@ export class UserDataSource extends DataSource {
 
   async signup (args) {
     const saltRounds = 10
+    await this.getAll()
+
     if (this.users.some((user) => user.email === args.email)) {
       throw new UserInputError('This email already exists')
     }
@@ -69,6 +85,23 @@ export class UserDataSource extends DataSource {
     newUser.password = await bcrypt.hash(args.password, saltRounds)
     this.users.push(newUser)
 
+    const session = this.context.driver.session()
+    const txc = session.beginTransaction()
+    try {
+      const result = await txc.run(
+        'CREATE (user:User {id: $idParam, name: $nameParam, email: $emailParam, password: $passwordParam})', {
+          idParam: newUser.id,
+          nameParam: args.name,
+          emailParam: args.email,
+          passwordParam: newUser.password
+        })
+      await txc.commit()
+    } catch (error) {
+      console.log(error)
+    } finally {
+      await session.close()
+    }
+
     return generateAccessToken(newUser.id)
   }
 
@@ -78,6 +111,7 @@ export class UserDataSource extends DataSource {
         'The password should have at least 8 characters'
       )
     }
+    await this.getAll()
     const user = this.users.find((user) => user.email === args.email)
     if (!user) {
       throw new UserInputError('No matching user founded in the DB')
