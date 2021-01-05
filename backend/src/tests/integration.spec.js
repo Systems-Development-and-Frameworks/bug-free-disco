@@ -44,7 +44,6 @@ describe('queries', () => {
   describe('POSTS', () => {
     beforeEach(async () => {
       await cleanDatabase()
-      await userdb.signup({ name: 'Alice', email: 'alice@dada.de', password: '123456789' })
     })
 
     const POSTS = gql`
@@ -68,12 +67,13 @@ describe('queries', () => {
 
     describe('given posts in the database', () => {
       beforeEach(async () => {
+        await userdb.signup({ name: 'Peter', email: 'peter@dada.de', password: 'ZoeRobolomais' })
         const session = driver.session()
         const txc = session.beginTransaction()
         try {
           const result = await txc.run(
             'CREATE (post:Post {id: "75ffbdc80bdbe967bfa399af1d9a18ae", title: "Test", votes: 0, voters: []}) ' +
-            'WITH post MATCH (user:User) WHERE user.name = "Alice" ' +
+            'WITH post MATCH (user:User) WHERE user.name = "Peter" ' +
             'CREATE (user) - [r:WROTE] -> (post)')
           await txc.commit()
         } catch (error) {
@@ -149,6 +149,11 @@ describe('mutations', () => {
     userdb = new UserDataSource()
     postdb = new PostDataSource()
   })
+
+  afterAll(async () => {
+    await cleanDatabase();
+    driver.close();
+  });
 
   describe('given users in the database', () => {
     beforeEach(async (done) => {
