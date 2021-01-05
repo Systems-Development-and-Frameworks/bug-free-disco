@@ -45,6 +45,10 @@ describe('queries', () => {
       await cleanDatabase()
     })
 
+    afterAll(async () => {
+      await cleanDatabase()
+    })
+
     const POSTS = gql`
             query {
                 posts {
@@ -149,7 +153,7 @@ describe('mutations', () => {
   })
 
   afterAll(async () => {
-    await cleanDatabase()
+    //await cleanDatabase()
     driver.close()
   })
 
@@ -276,16 +280,18 @@ describe('mutations', () => {
         `
 
       it('votes the post up', async () => {
-        expect(postdb.posts[0].votes).toEqual(0)
+        expect(postdb.posts[1].votes).toEqual(0)
         await upvoteAction()
-        expect(postdb.posts[0].votes).toEqual(1)
+        console.log(postdb.posts);
+        expect(postdb.posts[1].votes).toEqual(1)
+
       })
 
       it('calls postdb.upvote', async () => {
         postdb.upvote = jest.fn(() => {
         })
         await upvoteAction()
-        expect(postdb.upvote).toHaveBeenCalledWith({ id: postdb.posts[0].id })
+        expect(postdb.upvote).toHaveBeenCalledWith({ id: postdb.posts[1].id })
       })
 
       it('responds for voting up a post successfully', async () => {
