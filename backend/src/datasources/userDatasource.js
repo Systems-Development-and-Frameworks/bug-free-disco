@@ -3,6 +3,7 @@ import { UserInputError } from 'apollo-server'
 import bcrypt from 'bcrypt'
 import { generateAccessToken } from '../utils/tokenGenerator'
 import { User } from '../models/user'
+import driver from '../neo4j/driver'
 
 export class UserDataSource extends DataSource {
   constructor (users = []) {
@@ -15,6 +16,7 @@ export class UserDataSource extends DataSource {
   }
 
   async getUserById (id) {
+    await this.getAll()
     if (id) {
       return this.users.find((user) => user.id === id)
     } else {
@@ -25,6 +27,7 @@ export class UserDataSource extends DataSource {
   }
 
   async getUserByName (name) {
+    await this.getAll()
     if (name) {
       return this.users.find((user) => user.name === name)
     } else {
@@ -35,6 +38,7 @@ export class UserDataSource extends DataSource {
   }
 
   async getUserByEmail (email) {
+    await this.getAll()
     if (email) {
       return this.users.find((user) => user.email === email)
     } else {
@@ -46,9 +50,9 @@ export class UserDataSource extends DataSource {
 
   async getAll () {
     this.users = []
-
-    const session = this.context.driver.session()
+    const session = driver.session()
     const txc = session.beginTransaction()
+
     try {
       const result = await txc.run('MATCH(u:User) RETURN u')
       await txc.commit()
@@ -83,13 +87,12 @@ export class UserDataSource extends DataSource {
 
     const newUser = new User(args)
     newUser.password = await bcrypt.hash(args.password, saltRounds)
-    this.users.push(newUser)
 
-    const session = this.context.driver.session()
+    const session = driver.session()
     const txc = session.beginTransaction()
     try {
       const result = await txc.run(
-        'CREATE (user:User {id: $idParam, name: $nameParam, email: $emailParam, password: $passwordParam})', {
+        'CREATE (user:User {id: $idParam, name: $nameParam, email: $emailParam, password: $passwordParam, posts: []})', {
           idParam: newUser.id,
           nameParam: args.name,
           emailParam: args.email,
@@ -101,6 +104,7 @@ export class UserDataSource extends DataSource {
     } finally {
       await session.close()
     }
+    this.users.push(newUser)
 
     return generateAccessToken(newUser.id)
   }

@@ -8,12 +8,15 @@ import { PostDataSource } from '../datasources/postDatasource'
 import { UserDataSource } from '../datasources/userDatasource'
 import { Post } from '../models/post'
 import { testClient } from './testClient'
+import neo4jSchema from '../neo4j/schema'
+import driver from '../neo4j/driver'
+import { stitchSchemas } from '@graphql-tools/stitch'
 
 let userdb = new UserDataSource()
 let postdb = new PostDataSource()
 
 const schema = applyMiddleware(
-  makeExecutableSchema({ typeDefs, resolvers }),
+  stitchSchemas({ subschemas: [neo4jSchema], typeDefs, resolvers }),
   permissions
 )
 
@@ -21,16 +24,29 @@ const { mutate, query } = testClient(
   {
     schema,
     dataSources: () => ({ userdb, postdb }),
-    context: async ({ req, res }) => ({ req, res })
+    context: async ({ req, res }) => ({ req, res, driver })
   },
   {
     req: { headers: { authorization: 'Bearer ' } }
   }
 )
 
+const cleanDatabase = async () => {
+  await driver
+    .session()
+    .writeTransaction(txc => txc.run('MATCH(n) DETACH DELETE n;'));
+  postdb.getAll()
+  userdb.getAll()
+};
+
 // TEST Query Posts
 describe('queries', () => {
   describe('POSTS', () => {
+    beforeEach(async () => {
+      await cleanDatabase()
+      await userdb.signup({ name: 'Alice', email: 'alice@dada.de', password: '123456789' })
+    })
+
     const POSTS = gql`
             query {
                 posts {
@@ -51,8 +67,21 @@ describe('queries', () => {
     })
 
     describe('given posts in the database', () => {
-      beforeEach(() => {
-        postdb.posts = [new Post({ title: 'Test' })]
+      beforeEach(async () => {
+        const session = driver.session()
+        const txc = session.beginTransaction()
+        try {
+          const result = await txc.run(
+            'CREATE (post:Post {id: "75ffbdc80bdbe967bfa399af1d9a18ae", title: "Test", votes: 0, voters: []}) ' +
+            'WITH post MATCH (user:User) WHERE user.name = "Alice" ' +
+            'CREATE (user) - [r:WROTE] -> (post)')
+          await txc.commit()
+        } catch (error) {
+          console.log(error)
+        } finally {
+          await session.close()
+        }
+
       })
 
       it('returns posts', async () => {
@@ -96,6 +125,7 @@ describe('queries', () => {
       // signup peter and login to get the jwt access key
       let newUserJwt = ''
       beforeEach(async () => {
+        await cleanDatabase()
         await userdb.signup({ name: 'Peter', email: 'peter@dada.de', password: 'ZoeRobolomais' })
         newUserJwt = await userdb.login({ email: 'peter@dada.de', password: 'ZoeRobolomais' })
       })
@@ -122,6 +152,7 @@ describe('mutations', () => {
 
   describe('given users in the database', () => {
     beforeEach(async (done) => {
+      await cleanDatabase()
       await userdb.signup({ name: 'Peter', email: 'peter@dada.de', password: 'ZoeRobolomais' })
       newUserJwt = await userdb.login({ email: 'peter@dada.de', password: 'ZoeRobolomais' })
       const newUser = await userdb.getUserByEmail('peter@dada.de')
@@ -217,6 +248,23 @@ describe('mutations', () => {
     })
     // TEST upvote
     describe('voting up a post which exists and havent been upvoted yet', () => {
+      beforeEach(async () => {
+        const session = driver.session()
+        const txc = session.beginTransaction()
+        try {
+          const result = await txc.run(
+            'CREATE (post:Post {id: "75ffbdc80bdbe967bfa399af1d9a18ae", title: "Test", votes: 0, voters: []}) ' +
+            'WITH post MATCH (user:User) WHERE user.name = "Peter" ' +
+            'CREATE (user) - [r:WROTE] -> (post)')
+          await txc.commit()
+        } catch (error) {
+          console.log(error)
+        } finally {
+          await session.close()
+        }
+
+      })
+
       const upvoteAction = () => mutate({ mutation: UPVOTE, variables: { id: postdb.posts[0].id }, ctxArg: { req: { headers: { authorization: `Bearer ${newUserJwt}` } } } })
 
       const UPVOTE = gql`

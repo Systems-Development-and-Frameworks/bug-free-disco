@@ -6,9 +6,10 @@ import { resolvers } from './resolvers'
 import { UserDataSource } from './datasources/userDatasource'
 import { PostDataSource } from './datasources/postDatasource'
 import { permissions } from './utils/permissionHandler'
-import neo4jSchema from './neo4j-graphql-js/schema'
+import neo4jSchema from './neo4j/schema'
+import driver from './neo4j/driver'
 import { stitchSchemas } from '@graphql-tools/stitch'
-import driver from './driver'
+
 
 const userdb = new UserDataSource()
 const postdb = new PostDataSource()
@@ -18,7 +19,8 @@ const dataSources = () => ({ userdb, postdb })
 const context = ({ req, res }) => ({ req, res, driver })
 
 const schema = applyMiddleware(
-  stitchSchemas({ subschemas: [neo4jSchema], typeDefs, resolvers })
+  stitchSchemas({ subschemas: [neo4jSchema], typeDefs, resolvers }),
+  permissions
 )
 
 export default class Server {

@@ -1,6 +1,7 @@
 import { DataSource } from 'apollo-datasource'
 import { UserInputError } from 'apollo-server'
 import { Post } from '../models/post'
+import driver from '../neo4j/driver'
 
 export class PostDataSource extends DataSource {
   constructor (posts = []) {
@@ -13,6 +14,7 @@ export class PostDataSource extends DataSource {
   }
 
   async getPostById (id) {
+    await this.getAll()
     if (id) {
       return this.posts.find((post) => post.id === id)
     } else {
@@ -23,6 +25,7 @@ export class PostDataSource extends DataSource {
   }
 
   async getPostByTitle (title) {
+    await this.getAll()
     if (title) {
       return this.posts.find((post) => post.title === title)
     } else {
@@ -49,17 +52,19 @@ export class PostDataSource extends DataSource {
 
   async getAll () {
     this.posts = []
-    const session = this.context.driver.session()
+    const session = driver.session()
     const txc = session.beginTransaction()
     try {
       const result = await txc.run('MATCH(p:Post) RETURN p')
       await txc.commit()
+      result.records.forEach(r => r.get(0).properties.votes = r.get(0).properties.votes.toNumber())
       result.records.forEach(r => this.posts.push(r.get(0).properties))
     } catch (error) {
       console.log(error)
     } finally {
       await session.close()
     }
+
     return this.posts
   }
 
@@ -73,6 +78,25 @@ export class PostDataSource extends DataSource {
       title: args.post.title,
       author: author
     })
+
+    const session = driver.session()
+    const txc = session.beginTransaction()
+    try {
+      const result = await txc.run(
+        'CREATE (post:Post {id: $idParam, title: $titleParam, votes: 0, voters: []}) ' +
+        'WITH post MATCH (user:User) WHERE user.id = $userParam ' +
+        'CREATE (user) - [r:WROTE] -> (post)', {
+          idParam: newPost.id,
+          titleParam: args.post.title,
+          userParam: author.id
+        })
+
+      await txc.commit()
+    } catch (error) {
+      console.log(error)
+    } finally {
+      await session.close()
+    }
 
     author.posts.push(newPost)
     this.posts.push(newPost)
@@ -94,6 +118,27 @@ export class PostDataSource extends DataSource {
       post.votes++
       post.voters.push(author)
     }
+    const session = this.context.driver.session()
+    const txc = session.beginTransaction()
+    var neo4j = require('neo4j-driver')
+    try {
+      const result = await txc.run(
+        'Match (post:Post) WHERE post.id = $idParam ' +
+        'SET post.votes = $votesParam ' +
+        'WITH post MATCH (user:User) WHERE user.id = $userParam ' +
+        'CREATE (user) - [r:VOTED] -> (post)', {
+          idParam: args.id,
+          votesParam: neo4j.int(post.votes),
+          userParam: author.id
+        })
+
+      await txc.commit()
+    } catch (error) {
+      console.log(error)
+    } finally {
+      await session.close()
+    }
+
     return post
   }
 
@@ -111,6 +156,26 @@ export class PostDataSource extends DataSource {
     if (!post.voters.some((user) => user.name === author.name)) {
       post.votes--
       post.voters.push(author)
+    }
+    const session = this.context.driver.session()
+    const txc = session.beginTransaction()
+    var neo4j = require('neo4j-driver')
+    try {
+      const result = await txc.run(
+        'Match (post:Post) WHERE post.id = $idParam ' +
+        'SET post.votes = $votesParam ' +
+        'WITH post MATCH (user:User) WHERE user.id = $userParam ' +
+        'CREATE (user) - [r:VOTED] -> (post)', {
+          idParam: args.id,
+          votesParam: neo4j.int(post.votes),
+          userParam: author.id
+        })
+
+      await txc.commit()
+    } catch (error) {
+      console.log(error)
+    } finally {
+      await session.close()
     }
 
     return post

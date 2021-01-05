@@ -20,7 +20,7 @@ const typeDefs = gql`
 const schema = makeAugmentedSchema({
   typeDefs,
   config: {
-    query: false,
+    query: true,
     mutation: false
   }
 })
