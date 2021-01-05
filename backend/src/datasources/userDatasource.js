@@ -91,7 +91,7 @@ export class UserDataSource extends DataSource {
     const session = driver.session()
     const txc = session.beginTransaction()
     try {
-      const result = await txc.run(
+      await txc.run(
         'CREATE (user:User {id: $idParam, name: $nameParam, email: $emailParam, password: $passwordParam, posts: []})', {
           idParam: newUser.id,
           nameParam: args.name,

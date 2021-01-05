@@ -82,7 +82,7 @@ export class PostDataSource extends DataSource {
     const session = driver.session()
     const txc = session.beginTransaction()
     try {
-      const result = await txc.run(
+      await txc.run(
         'CREATE (post:Post {id: $idParam, title: $titleParam, votes: 0, voters: []}) ' +
         'WITH post MATCH (user:User) WHERE user.id = $userParam ' +
         'CREATE (user) - [r:WROTE] -> (post)', {
@@ -120,9 +120,9 @@ export class PostDataSource extends DataSource {
     }
     const session = this.context.driver.session()
     const txc = session.beginTransaction()
-    var neo4j = require('neo4j-driver')
+    const neo4j = require('neo4j-driver')
     try {
-      const result = await txc.run(
+      await txc.run(
         'Match (post:Post) WHERE post.id = $idParam ' +
         'SET post.votes = $votesParam ' +
         'WITH post MATCH (user:User) WHERE user.id = $userParam ' +
@@ -159,9 +159,9 @@ export class PostDataSource extends DataSource {
     }
     const session = this.context.driver.session()
     const txc = session.beginTransaction()
-    var neo4j = require('neo4j-driver')
+    const neo4j = require('neo4j-driver')
     try {
-      const result = await txc.run(
+      await txc.run(
         'Match (post:Post) WHERE post.id = $idParam ' +
         'SET post.votes = $votesParam ' +
         'WITH post MATCH (user:User) WHERE user.id = $userParam ' +

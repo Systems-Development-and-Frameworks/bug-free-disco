@@ -1,5 +1,4 @@
 import { AuthenticationError, gql, UserInputError } from 'apollo-server'
-import { makeExecutableSchema } from 'graphql-tools'
 import { applyMiddleware } from 'graphql-middleware'
 import typeDefs from '../typeDefs'
 import { resolvers } from '../resolvers'
@@ -34,10 +33,10 @@ const { mutate, query } = testClient(
 const cleanDatabase = async () => {
   await driver
     .session()
-    .writeTransaction(txc => txc.run('MATCH(n) DETACH DELETE n;'));
+    .writeTransaction(txc => txc.run('MATCH(n) DETACH DELETE n;'))
   postdb.getAll()
   userdb.getAll()
-};
+}
 
 // TEST Query Posts
 describe('queries', () => {
@@ -71,7 +70,7 @@ describe('queries', () => {
         const session = driver.session()
         const txc = session.beginTransaction()
         try {
-          const result = await txc.run(
+          await txc.run(
             'CREATE (post:Post {id: "75ffbdc80bdbe967bfa399af1d9a18ae", title: "Test", votes: 0, voters: []}) ' +
             'WITH post MATCH (user:User) WHERE user.name = "Peter" ' +
             'CREATE (user) - [r:WROTE] -> (post)')
@@ -81,7 +80,6 @@ describe('queries', () => {
         } finally {
           await session.close()
         }
-
       })
 
       it('returns posts', async () => {
@@ -151,9 +149,9 @@ describe('mutations', () => {
   })
 
   afterAll(async () => {
-    await cleanDatabase();
-    driver.close();
-  });
+    await cleanDatabase()
+    driver.close()
+  })
 
   describe('given users in the database', () => {
     beforeEach(async (done) => {
@@ -257,7 +255,7 @@ describe('mutations', () => {
         const session = driver.session()
         const txc = session.beginTransaction()
         try {
-          const result = await txc.run(
+          await txc.run(
             'CREATE (post:Post {id: "75ffbdc80bdbe967bfa399af1d9a18ae", title: "Test", votes: 0, voters: []}) ' +
             'WITH post MATCH (user:User) WHERE user.name = "Peter" ' +
             'CREATE (user) - [r:WROTE] -> (post)')
@@ -267,7 +265,6 @@ describe('mutations', () => {
         } finally {
           await session.close()
         }
-
       })
 
       const upvoteAction = () => mutate({ mutation: UPVOTE, variables: { id: postdb.posts[0].id }, ctxArg: { req: { headers: { authorization: `Bearer ${newUserJwt}` } } } })

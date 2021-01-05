@@ -10,7 +10,6 @@ import neo4jSchema from './neo4j/schema'
 import driver from './neo4j/driver'
 import { stitchSchemas } from '@graphql-tools/stitch'
 
-
 const userdb = new UserDataSource()
 const postdb = new PostDataSource()
 

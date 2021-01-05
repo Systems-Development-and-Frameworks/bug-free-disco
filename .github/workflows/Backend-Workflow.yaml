@@ -31,11 +31,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - uses: docker-practice/actions-setup-docker@master
+        with:
+          docker_channel: nightly
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: apt-get install docker-ce docker-ce-cli containerd.io
       - run: docker run  --publish=7474:7474 --publish=7687:7687 --env=NEO4J_AUTH=none neo4j:latest
       - run: npm install
       - run: npm run test
