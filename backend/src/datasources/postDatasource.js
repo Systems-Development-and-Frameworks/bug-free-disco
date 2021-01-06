@@ -57,7 +57,7 @@ export class PostDataSource extends DataSource {
     try {
       const result = await txc.run('MATCH(p:Post) RETURN p')
       await txc.commit()
-      result.records.forEach(r => r.get(0).properties.votes = r.get(0).properties.votes.toNumber())
+      result.records.forEach(r => { r.get(0).properties.votes = r.get(0).properties.votes.toNumber() })
       result.records.forEach(r => this.posts.push(r.get(0).properties))
     } catch (error) {
       console.log(error)
@@ -117,26 +117,26 @@ export class PostDataSource extends DataSource {
     if (!post.voters.some((user) => user.name === author.name)) {
       post.votes++
       post.voters.push(author)
-    }
-    const session = this.context.driver.session()
-    const txc = session.beginTransaction()
-    const neo4j = require('neo4j-driver')
-    try {
-      await txc.run(
-        'Match (post:Post) WHERE post.id = $idParam ' +
-        'SET post.votes = $votesParam ' +
-        'WITH post MATCH (user:User) WHERE user.id = $userParam ' +
-        'CREATE (user) - [r:VOTED] -> (post)', {
-          idParam: args.id,
-          votesParam: neo4j.int(post.votes),
-          userParam: author.id
-        })
+      const session = this.context.driver.session()
+      const txc = session.beginTransaction()
+      const neo4j = require('neo4j-driver')
+      try {
+        await txc.run(
+          'Match (post:Post) WHERE post.id = $idParam ' +
+          'SET post.votes = $votesParam ' +
+          'WITH post MATCH (user:User) WHERE user.id = $userParam ' +
+          'CREATE (user) - [r:VOTED] -> (post)', {
+            idParam: args.id,
+            votesParam: neo4j.int(post.votes),
+            userParam: author.id
+          })
 
-      await txc.commit()
-    } catch (error) {
-      console.log(error)
-    } finally {
-      await session.close()
+        await txc.commit()
+      } catch (error) {
+        console.log(error)
+      } finally {
+        await session.close()
+      }
     }
 
     return post
@@ -156,26 +156,26 @@ export class PostDataSource extends DataSource {
     if (!post.voters.some((user) => user.name === author.name)) {
       post.votes--
       post.voters.push(author)
-    }
-    const session = this.context.driver.session()
-    const txc = session.beginTransaction()
-    const neo4j = require('neo4j-driver')
-    try {
-      await txc.run(
-        'Match (post:Post) WHERE post.id = $idParam ' +
-        'SET post.votes = $votesParam ' +
-        'WITH post MATCH (user:User) WHERE user.id = $userParam ' +
-        'CREATE (user) - [r:VOTED] -> (post)', {
-          idParam: args.id,
-          votesParam: neo4j.int(post.votes),
-          userParam: author.id
-        })
+      const session = this.context.driver.session()
+      const txc = session.beginTransaction()
+      const neo4j = require('neo4j-driver')
+      try {
+        await txc.run(
+          'Match (post:Post) WHERE post.id = $idParam ' +
+          'SET post.votes = $votesParam ' +
+          'WITH post MATCH (user:User) WHERE user.id = $userParam ' +
+          'CREATE (user) - [r:VOTED] -> (post)', {
+            idParam: args.id,
+            votesParam: neo4j.int(post.votes),
+            userParam: author.id
+          })
 
-      await txc.commit()
-    } catch (error) {
-      console.log(error)
-    } finally {
-      await session.close()
+        await txc.commit()
+      } catch (error) {
+        console.log(error)
+      } finally {
+        await session.close()
+      }
     }
 
     return post
