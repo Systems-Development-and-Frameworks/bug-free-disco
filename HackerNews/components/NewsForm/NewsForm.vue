@@ -5,65 +5,69 @@
     </p>
 
     <ul>
-      <li v-for="(error, index) in errors" :key="index">{{ error }}</li>
+      <li v-for="(error, index) in errors" :key="index">
+        {{ error }}
+      </li>
     </ul>
 
     <label for="Title">Title</label>
-    <input v-model="news.title" id="Title" />
+    <input id="Title" v-model="news.title">
     <label for="Body">Body</label>
-    <input v-model="news.body" id="Body" />
-    <button type="submit">Create</button>
+    <input id="Body" v-model="news.body">
+    <button type="submit">
+      Create
+    </button>
   </form>
 </template>
 
 <script>
 export default {
-  name: "NewsForm",
+  name: 'NewsForm',
   props: {
     newsList: {
       type: Array,
       required: true
     }
   },
-  data() {
+  data () {
     return {
       errors: [],
       news: {
-        title: "",
-        body: ""
+        title: '',
+        body: ''
       }
-    };
+    }
   },
   methods: {
-    checkForm(e) {
+    checkForm (e) {
       if (this.news.title && !this.newsInNewsList(this.news.title)) {
-        this.errors = [];
-        this.$emit("createItem", this.news);
-        this.news = { title: "", body: "" };
-        return true;
+        this.errors = []
+        this.$emit('createItem', this.news)
+        this.news = { title: '', body: '' }
+        return true
       }
 
-      this.errors = [];
+      this.errors = []
 
       if (!this.news.title) {
-        this.errors.push("Title required.");
+        this.errors.push('Title required.')
       }
 
       if (this.newsInNewsList(this.news.title)) {
         this.errors.push(
-          "A news with title (" +
+          'A news with title (' +
             this.news.title +
-            ") is already contained in the list of news"
-        );
+            ') is already contained in the list of news'
+        )
       }
 
-      e.preventDefault();
+      e.preventDefault()
     },
-    newsInNewsList(newsTitle) {
-      return this.newsList.map(n => n.title).includes(newsTitle);
+    newsInNewsList (newsTitle) {
+      return this.newsList.map(n => n.title).includes(newsTitle)
     }
   }
-};
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

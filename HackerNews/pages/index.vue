@@ -1,19 +1,19 @@
 <template>
   <div id="app">
-    <img alt="Hacker News" src="./assets/logo.png" width="50" height="50" />
+    <img alt="Hacker News" src="../assets/logo.png" width="50" height="50">
     <Home msg="Welcome to Hackernews" />
   </div>
 </template>
 
 <script>
-import Home from "./components/Home/Home.vue";
+import Home from '../components/Home/Home.vue'
 
 export default {
-  name: "App",
+  name: 'App',
   components: {
     Home
   }
-};
+}
 </script>
 
 <style>
