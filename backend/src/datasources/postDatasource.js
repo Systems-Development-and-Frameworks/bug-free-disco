@@ -14,7 +14,6 @@ export class PostDataSource extends DataSource {
   }
 
   async getPostById (id) {
-    await this.getAll()
     if (id) {
       return this.posts.find((post) => post.id === id)
     } else {
@@ -25,7 +24,6 @@ export class PostDataSource extends DataSource {
   }
 
   async getPostByTitle (title) {
-    await this.getAll()
     if (title) {
       return this.posts.find((post) => post.title === title)
     } else {
@@ -41,6 +39,21 @@ export class PostDataSource extends DataSource {
       this.posts = this.posts.filter((post) => {
         return post.id !== args.id
       })
+      const session = driver.session()
+      const txc = session.beginTransaction()
+      try {
+        await txc.run(
+          'MATCH (post:Post { id: $idParam }) ' +
+          'Detach DELETE post', {
+            idParam: postFound.id
+          })
+
+        await txc.commit()
+      } catch (error) {
+        console.log(error)
+      } finally {
+        await session.close()
+      }
 
       return postFound
     }
