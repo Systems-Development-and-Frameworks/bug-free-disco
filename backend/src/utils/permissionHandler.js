@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { AuthenticationError, UserInputError } from 'apollo-server'
-import { rule, shield, allow } from 'graphql-shield'
+import { rule, shield, allow, deny } from 'graphql-shield'
 require('dotenv-flow').config()
 
 const isAuthenticated = rule({ cache: 'contextual' })(
@@ -86,7 +86,9 @@ const isOwner = rule({ cache: 'contextual' })(
 
 export const permissions = shield({
   Query: {
-    users: isAuthenticated
+    users: isAuthenticated,
+    getUser: deny,
+    getPosts: deny
   },
   Mutation: {
     write: isAuthenticated,

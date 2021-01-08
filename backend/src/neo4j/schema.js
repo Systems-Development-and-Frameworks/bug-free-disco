@@ -15,12 +15,17 @@ const typeDefs = gql`
    voters: [User!] @relation(name: "VOTED", direction: IN)
    author: User! @relation(name: "WROTE", direction: IN)
  }
+
+ type Query {
+   getPosts: [Post]
+   getUser: [User]
+ }
 `
 
 const schema = makeAugmentedSchema({
   typeDefs,
   config: {
-    query: true,
+    query: false,
     mutation: false
   }
 })
