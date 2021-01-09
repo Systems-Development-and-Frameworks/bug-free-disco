@@ -273,14 +273,7 @@ describe('Neo4j driven tests', () => {
           const post = await upvoteAction()
           expect(post.data.upvote.votes).toEqual(1)
         })
-        /*
-        it('calls postdb.upvote', async () => {
-          postdb.upvote = jest.fn(() => {
-          })
-          await upvoteAction()
-          expect(postdb.upvote).toHaveBeenCalledWith({ id: postdb.posts[0].id })
-        })
-        */
+
         it('responds for voting up a post successfully', async () => {
           await expect(upvoteAction())
             .resolves
@@ -355,14 +348,7 @@ describe('Neo4j driven tests', () => {
           const post = await downvoteAction()
           expect(post.data.downvote.votes).toEqual(-1)
         })
-        /*
-        it('calls postdb.downvote', async () => {
-          postdb.downvote = jest.fn(() => {
-          })
-          await downvoteAction()
-          expect(postdb.downvote).toHaveBeenCalledWith({ id: postdb.posts[0].id })
-        })
-        */
+
         it('responds for voting down a post successfully', async () => {
           await expect(downvoteAction())
             .resolves
