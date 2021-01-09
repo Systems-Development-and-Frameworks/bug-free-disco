@@ -16,9 +16,26 @@ export class UserDataSource extends DataSource {
   }
 
   async getUserById (id) {
-    await this.getAll()
     if (id) {
-      return this.users.find((user) => user.id === id)
+      const session = driver.session()
+      const txc = session.beginTransaction()
+      try {
+        const result = await txc.run(
+          'MATCH (u:User { id: $idParam }) RETURN u', {
+            idParam: id
+          })
+        await txc.commit()
+
+        if (result.records[0]) {
+          return result.records[0].get(0).properties
+        } else {
+          return null
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        await session.close()
+      }
     } else {
       throw new UserInputError(
         'No matching user found. Please check your input'

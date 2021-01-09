@@ -26,7 +26,7 @@ const schema = makeAugmentedSchema({
   typeDefs,
   config: {
     query: false,
-    mutation: false
+    mutation: true
   }
 })
 export default schema

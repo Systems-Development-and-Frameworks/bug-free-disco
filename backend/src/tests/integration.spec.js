@@ -270,17 +270,17 @@ describe('Neo4j driven tests', () => {
 
         it('votes the post up', async () => {
           expect(postdb.posts[0].votes).toEqual(0)
-          await upvoteAction()
-          expect(postdb.posts[0].votes).toEqual(1)
+          const post = await upvoteAction()
+          expect(post.data.upvote.votes).toEqual(1)
         })
-
+        /*
         it('calls postdb.upvote', async () => {
           postdb.upvote = jest.fn(() => {
           })
           await upvoteAction()
           expect(postdb.upvote).toHaveBeenCalledWith({ id: postdb.posts[0].id })
         })
-
+        */
         it('responds for voting up a post successfully', async () => {
           await expect(upvoteAction())
             .resolves
@@ -333,9 +333,11 @@ describe('Neo4j driven tests', () => {
 
         it('doesn\'t increase the votes a second time', async () => {
           await upVoteAction()
-          expect(postdb.posts[0].votes).toEqual(1)
+          const postBefore = await postdb.getPostById(postdb.posts[0].id)
+          expect(postBefore.votes).toEqual(1)
           await upVoteAction()
-          expect(postdb.posts[0].votes).toEqual(1)
+          const postAfter = await postdb.getPostById(postdb.posts[0].id)
+          expect(postAfter.votes).toEqual(1)
         })
       })
 
@@ -350,17 +352,17 @@ describe('Neo4j driven tests', () => {
 
         it('votes the post down', async () => {
           expect(postdb.posts[0].votes).toEqual(0)
-          await downvoteAction()
-          expect(postdb.posts[0].votes).toEqual(-1)
+          const post = await downvoteAction()
+          expect(post.data.downvote.votes).toEqual(-1)
         })
-
+        /*
         it('calls postdb.downvote', async () => {
           postdb.downvote = jest.fn(() => {
           })
           await downvoteAction()
           expect(postdb.downvote).toHaveBeenCalledWith({ id: postdb.posts[0].id })
         })
-
+        */
         it('responds for voting down a post successfully', async () => {
           await expect(downvoteAction())
             .resolves
@@ -413,9 +415,11 @@ describe('Neo4j driven tests', () => {
 
         it('doesn\'t dicrease the vote a second time', async () => {
           await downvoteAction()
-          expect(postdb.posts[0].votes).toEqual(-1)
+          const postBefore = await postdb.getPostById(postdb.posts[0].id)
+          expect(postBefore.votes).toEqual(-1)
           await downvoteAction()
-          expect(postdb.posts[0].votes).toEqual(-1)
+          const postAfter = await postdb.getPostById(postdb.posts[0].id)
+          expect(postAfter.votes).toEqual(-1)
         })
       })
     })

@@ -1,6 +1,8 @@
 import { DataSource } from 'apollo-datasource'
 import { UserInputError } from 'apollo-server'
 import { Post } from '../models/post'
+import { delegateToSchema } from '@graphql-tools/delegate'
+import subschema from '../neo4j/schema'
 import driver from '../neo4j/driver'
 
 export class PostDataSource extends DataSource {
@@ -15,7 +17,27 @@ export class PostDataSource extends DataSource {
 
   async getPostById (id) {
     if (id) {
-      return this.posts.find((post) => post.id === id)
+      const session = driver.session()
+      const txc = session.beginTransaction()
+      try {
+        const result = await txc.run(
+          'MATCH (p:Post { id: $idParam }) RETURN p', {
+            idParam: id
+          })
+        await txc.commit()
+
+        if (result.records[0]) {
+          result.records[0].get(0).properties.votes = result.records[0].get(0).properties.votes.toNumber()
+          const post = result.records[0].get(0).properties
+          return post
+        } else {
+          return null
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        await session.close()
+      }
     } else {
       throw new UserInputError(
         'No matching post found. Please check your input'
@@ -33,34 +55,59 @@ export class PostDataSource extends DataSource {
     }
   }
 
-  async deletePost (args) {
-    const postFound = this.posts.find((post) => post.id === args.id)
-    if (postFound) {
-      this.posts = this.posts.filter((post) => {
-        return post.id !== args.id
-      })
+  async getVoters (id) {
+    if (id) {
+      const voters = []
       const session = driver.session()
       const txc = session.beginTransaction()
       try {
-        await txc.run(
-          'MATCH (post:Post { id: $idParam }) ' +
-          'Detach DELETE post', {
-            idParam: postFound.id
+        const result = await txc.run(
+          'MATCH (:Post { id: $idParam })<-[:VOTED]-(user)' +
+          'RETURN user.name', {
+            idParam: id
           })
 
         await txc.commit()
+        result.records.forEach(r => voters.push(r.get(0)))
+        return voters
       } catch (error) {
         console.log(error)
       } finally {
         await session.close()
       }
-
-      return postFound
+    } else {
+      throw new UserInputError(
+        'No matching post found. Please check your input'
+      )
     }
+  }
 
-    throw new UserInputError(
-      'No matching post found. Please check your input'
-    )
+  async getAuthorId (id) {
+    if (id) {
+      const session = driver.session()
+      const txc = session.beginTransaction()
+      try {
+        const result = await txc.run(
+          'MATCH (p:Post { id: $idParam })<-[:WROTE]-(user) RETURN user.id', {
+            idParam: id
+          })
+        await txc.commit()
+
+        if (result.records[0]) {
+          return result.records[0].get(0)
+        } else {
+          return null
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        await session.close()
+      }
+    } else {
+      throw new UserInputError(
+        'No matching post found. Please check your input'
+      )
+    }
   }
 
   async getAll () {
@@ -116,8 +163,10 @@ export class PostDataSource extends DataSource {
     return newPost
   }
 
-  async upvote (args) {
-    const post = this.posts.find((post) => post.id === args.id)
+  async upvote (parent, args, context, info) {
+    const voters = await this.getVoters(args.id)
+    const post = await this.getPostById(args.id)
+
     if (!post) {
       throw new UserInputError('This post doesn\'t exist')
     }
@@ -127,36 +176,44 @@ export class PostDataSource extends DataSource {
       throw new UserInputError('This username doesn\'t exist')
     }
 
-    if (!post.voters.some((user) => user.name === author.name)) {
+    if (!voters.some((user) => user === author.name)) {
       post.votes++
       post.voters.push(author)
       const session = this.context.driver.session()
       const txc = session.beginTransaction()
-      const neo4j = require('neo4j-driver')
       try {
         await txc.run(
           'Match (post:Post) WHERE post.id = $idParam ' +
-          'SET post.votes = $votesParam ' +
           'WITH post MATCH (user:User) WHERE user.id = $userParam ' +
           'CREATE (user) - [r:VOTED] -> (post)', {
             idParam: args.id,
-            votesParam: neo4j.int(post.votes),
             userParam: author.id
           })
-
         await txc.commit()
+
+        return delegateToSchema({
+          schema: subschema,
+          operation: 'mutation',
+          fieldName: 'UpdatePost',
+          args: {
+            id: args.id,
+            votes: post.votes
+          },
+          context,
+          info
+        })
       } catch (error) {
         console.log(error)
       } finally {
         await session.close()
       }
     }
-
-    return post
   }
 
-  async downvote (args) {
-    const post = this.posts.find((post) => post.id === args.id)
+  async downvote (parent, args, context, info) {
+    const voters = await this.getVoters(args.id)
+    const post = await this.getPostById(args.id)
+
     if (!post) {
       throw new UserInputError('This post doesn\'t exist')
     }
@@ -166,31 +223,37 @@ export class PostDataSource extends DataSource {
       throw new UserInputError('This username doesn\'t exist')
     }
 
-    if (!post.voters.some((user) => user.name === author.name)) {
+    if (!voters.some((user) => user === author.name)) {
       post.votes--
       post.voters.push(author)
       const session = this.context.driver.session()
       const txc = session.beginTransaction()
-      const neo4j = require('neo4j-driver')
       try {
         await txc.run(
           'Match (post:Post) WHERE post.id = $idParam ' +
-          'SET post.votes = $votesParam ' +
           'WITH post MATCH (user:User) WHERE user.id = $userParam ' +
           'CREATE (user) - [r:VOTED] -> (post)', {
             idParam: args.id,
-            votesParam: neo4j.int(post.votes),
             userParam: author.id
           })
-
         await txc.commit()
+
+        return delegateToSchema({
+          schema: subschema,
+          operation: 'mutation',
+          fieldName: 'UpdatePost',
+          args: {
+            id: args.id,
+            votes: post.votes
+          },
+          context,
+          info
+        })
       } catch (error) {
         console.log(error)
       } finally {
         await session.close()
       }
     }
-
-    return post
   }
 }

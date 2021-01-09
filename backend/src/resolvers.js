@@ -47,25 +47,28 @@ export const resolvers = {
         })
     },
 
-    upvote: async (parent, args, context) => {
-      return context.dataSources.postdb.upvote(args)
+    upvote: async (parent, args, context, info) => {
+      return context.dataSources.postdb.upvote(parent, args, context, info)
         .catch((err) => {
           return err
         })
     },
 
-    downvote: async (parent, args, context) => {
-      return context.dataSources.postdb.downvote(args)
+    downvote: async (parent, args, context, info) => {
+      return context.dataSources.postdb.downvote(parent, args, context, info)
         .catch((err) => {
           return err
         })
     },
 
-    delete: async (parent, args, context) => {
-      return context.dataSources.postdb.deletePost(args)
-        .catch((err) => {
-          return err
-        })
+    delete: async (parent, args, context, info) => {
+      return delegateToSchema({
+        schema: subschema,
+        operation: 'mutation',
+        fieldName: 'DeletePost',
+        context,
+        info
+      })
     }
   }
 }
