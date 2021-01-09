@@ -110,24 +110,6 @@ export class PostDataSource extends DataSource {
     }
   }
 
-  async getAll () {
-    this.posts = []
-    const session = driver.session()
-    const txc = session.beginTransaction()
-    try {
-      const result = await txc.run('MATCH(p:Post) RETURN p')
-      await txc.commit()
-      result.records.forEach(r => { r.get(0).properties.votes = r.get(0).properties.votes.toNumber() })
-      result.records.forEach(r => this.posts.push(r.get(0).properties))
-    } catch (error) {
-      console.log(error)
-    } finally {
-      await session.close()
-    }
-
-    return this.posts
-  }
-
   async createPost (args) {
     const author = this.context.req.user
     if (!args) {

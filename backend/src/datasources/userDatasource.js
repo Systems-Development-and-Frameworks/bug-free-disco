@@ -43,57 +43,39 @@ export class UserDataSource extends DataSource {
     }
   }
 
-  async getUserByName (name) {
-    await this.getAll()
-    if (name) {
-      return this.users.find((user) => user.name === name)
-    } else {
-      throw new UserInputError(
-        'No matching user found. Please check your input'
-      )
-    }
-  }
-
   async getUserByEmail (email) {
-    await this.getAll()
     if (email) {
-      return this.users.find((user) => user.email === email)
+      const session = driver.session()
+      const txc = session.beginTransaction()
+      try {
+        const result = await txc.run(
+          'MATCH (u:User { email: $emailParam }) RETURN u', {
+            emailParam: email
+          })
+        await txc.commit()
+
+        if (result.records[0]) {
+          return result.records[0].get(0).properties
+        } else {
+          return null
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        await session.close()
+      }
     } else {
       throw new UserInputError(
         'No matching user found. Please check your input'
       )
     }
-  }
-
-  async getAll () {
-    this.users = []
-    const session = driver.session()
-    const txc = session.beginTransaction()
-
-    try {
-      const result = await txc.run('MATCH(u:User) RETURN u')
-      await txc.commit()
-      result.records.forEach(r => this.users.push(r.get(0).properties))
-    } catch (error) {
-      console.log(error)
-    } finally {
-      await session.close()
-    }
-
-    return this.users
-  }
-
-  async removeUser (id) {
-    this.users = this.users.filter((user) => {
-      return user.id !== id
-    })
   }
 
   async signup (args) {
     const saltRounds = 10
-    await this.getAll()
+    const user = await this.getUserByEmail(args.email)
 
-    if (this.users.some((user) => user.email === args.email)) {
+    if (user) {
       throw new UserInputError('This email already exists')
     }
     if (args.password.length < 8) {
@@ -132,8 +114,7 @@ export class UserDataSource extends DataSource {
         'The password should have at least 8 characters'
       )
     }
-    await this.getAll()
-    const user = this.users.find((user) => user.email === args.email)
+    const user = await this.getUserByEmail(args.email)
     if (!user) {
       throw new UserInputError('No matching user founded in the DB')
     }

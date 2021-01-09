@@ -33,8 +33,6 @@ const cleanDatabase = async () => {
   await driver
     .session()
     .writeTransaction(txc => txc.run('MATCH(n) DETACH DELETE n;'))
-  postdb.getAll()
-  userdb.getAll()
 }
 
 // Block to close the Neo4j driver
