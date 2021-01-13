@@ -3,13 +3,13 @@
 | Deadline                   | Date                   |
 | -------------------------- | ---------------------- |
 | Review due date (optional) | 16.12.2020 - 14:00     |
-| **Final Due date**         | **06.01.2021 - 14:00** |
+| **Final Due date**         | **10.01.2021 - 14:00** |
 
 ## Goal
 
 We, the [`@mentors`](https://github.com/orgs/Systems-Development-and-Frameworks/teams/mentors), decided to focus in this exercise on an advanced feature of GraphQL: [GraphQL
 schema stitching](https://www.graphql-tools.com/docs/stitch-combining-schemas)
-and [schema delegation](https://www.graphql-tools.com/docs/stitch-combining-schemas).
+and [schema delegation](https://www.graphql-tools.com/docs/schema-delegation/#delegatetoschema).
 
 Extend exercise [#1](../1), [#2](../2), [#3](../3) and [#4](../4) with the new
 [objectives](#objectives).
@@ -36,8 +36,9 @@ Do the following:
 
 3. Refactor your mutations and queries. Ensure that data created during a
 mutation is persisted, ie. it is still there after a server restart. Any
-mutation which does not persist data will cost you a :star:. Queries and
-mutations must get their data from your chosen database or API endpoint.
+mutation which was required in a previous exercise and does not persist data
+will cost you a :star:. Queries and mutations must get their data from your
+chosen database or API endpoint.
 
 4. Ensure that your software tests have no side-effects, ie. your tests do not
 interfere with each other. Any software test case that introduces a side-effect
@@ -93,6 +94,8 @@ Choose one of the architectures below. Combinations are possible.
 
 ### Using a Remote GraphQL API
 
+*This is probably the easier solution!*
+
 If you don't want to host a database yourself, you can use a headless CMS which
 comes with a nice UI for your administrators and editors.
 
@@ -103,6 +106,7 @@ Please, encrypt your API keys with a symmetric key shared in our [Moodle course]
 Since you are using an external API, you **must** use mocks in your software
 tests when your resolvers would otherwise call your endpoint. You do not want
 your build server to produce traffic during builds or other side-effects.
+You can generate the mock gql file with [get-graphql-schema from Prisma](https://github.com/prisma-labs/get-graphql-schema)
 
 You must choose a headless CMS with a GraphQL endpoint that supports queries
 **and mutations**. Have a look into [this comparison](https://cms-comparison.io/#/list)
