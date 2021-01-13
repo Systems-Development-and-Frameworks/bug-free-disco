@@ -1,24 +1,24 @@
 // NewsForm.stories.js
 
-import NewsForm from "./NewsForm";
+import NewsForm from './NewsForm'
 
 export default {
-  title: "Components/NewsForm",
+  title: 'Components/NewsForm',
   component: NewsForm
-};
+}
 
 const Template = (args, { argTypes }) => ({
   props: Object.keys(argTypes),
   components: { NewsForm },
   template: '<NewsForm :newsList="newsList" @submit.prevent="checkForm" />'
-});
+})
 
-export const Default = Template.bind({});
+export const Default = Template.bind({})
 Default.args = {
   newsList: [
     {
-      title: "TestTitle",
-      body: ""
+      title: 'TestTitle',
+      body: ''
     }
   ]
-};
+}
