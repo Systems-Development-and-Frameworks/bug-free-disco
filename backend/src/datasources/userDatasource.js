@@ -3,6 +3,7 @@ import { UserInputError } from 'apollo-server'
 import bcrypt from 'bcrypt'
 import { generateAccessToken } from '../utils/tokenGenerator'
 import { User } from '../models/user'
+import driver from '../neo4j/driver'
 
 export class UserDataSource extends DataSource {
   constructor (users = []) {
@@ -16,17 +17,25 @@ export class UserDataSource extends DataSource {
 
   async getUserById (id) {
     if (id) {
-      return this.users.find((user) => user.id === id)
-    } else {
-      throw new UserInputError(
-        'No matching user found. Please check your input'
-      )
-    }
-  }
+      const session = driver.session()
+      const txc = session.beginTransaction()
+      try {
+        const result = await txc.run(
+          'MATCH (u:User { id: $idParam }) RETURN u', {
+            idParam: id
+          })
+        await txc.commit()
 
-  async getUserByName (name) {
-    if (name) {
-      return this.users.find((user) => user.name === name)
+        if (result.records[0]) {
+          return result.records[0].get(0).properties
+        } else {
+          return null
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        await session.close()
+      }
     } else {
       throw new UserInputError(
         'No matching user found. Please check your input'
@@ -36,7 +45,25 @@ export class UserDataSource extends DataSource {
 
   async getUserByEmail (email) {
     if (email) {
-      return this.users.find((user) => user.email === email)
+      const session = driver.session()
+      const txc = session.beginTransaction()
+      try {
+        const result = await txc.run(
+          'MATCH (u:User { email: $emailParam }) RETURN u', {
+            emailParam: email
+          })
+        await txc.commit()
+
+        if (result.records[0]) {
+          return result.records[0].get(0).properties
+        } else {
+          return null
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        await session.close()
+      }
     } else {
       throw new UserInputError(
         'No matching user found. Please check your input'
@@ -44,19 +71,11 @@ export class UserDataSource extends DataSource {
     }
   }
 
-  async getAll () {
-    return this.users
-  }
-
-  async removeUser (id) {
-    this.users = this.users.filter((user) => {
-      return user.id !== id
-    })
-  }
-
   async signup (args) {
     const saltRounds = 10
-    if (this.users.some((user) => user.email === args.email)) {
+    const user = await this.getUserByEmail(args.email)
+
+    if (user) {
       throw new UserInputError('This email already exists')
     }
     if (args.password.length < 8) {
@@ -67,6 +86,23 @@ export class UserDataSource extends DataSource {
 
     const newUser = new User(args)
     newUser.password = await bcrypt.hash(args.password, saltRounds)
+
+    const session = driver.session()
+    const txc = session.beginTransaction()
+    try {
+      await txc.run(
+        'CREATE (user:User {id: $idParam, name: $nameParam, email: $emailParam, password: $passwordParam, posts: []})', {
+          idParam: newUser.id,
+          nameParam: args.name,
+          emailParam: args.email,
+          passwordParam: newUser.password
+        })
+      await txc.commit()
+    } catch (error) {
+      console.log(error)
+    } finally {
+      await session.close()
+    }
     this.users.push(newUser)
 
     return generateAccessToken(newUser.id)
@@ -78,7 +114,7 @@ export class UserDataSource extends DataSource {
         'The password should have at least 8 characters'
       )
     }
-    const user = this.users.find((user) => user.email === args.email)
+    const user = await this.getUserByEmail(args.email)
     if (!user) {
       throw new UserInputError('No matching user founded in the DB')
     }

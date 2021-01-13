@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { AuthenticationError, UserInputError } from 'apollo-server'
-import { rule, shield, allow } from 'graphql-shield'
+import { rule, shield, allow, deny } from 'graphql-shield'
 require('dotenv-flow').config()
 
 const isAuthenticated = rule({ cache: 'contextual' })(
@@ -67,7 +67,8 @@ const isOwner = rule({ cache: 'contextual' })(
           // check if req.user is author of the post
           const post = await context.dataSources.postdb.getPostById(args.id)
           if (post) {
-            if (post.author.id === user.id) {
+            const authorId = await context.dataSources.postdb.getAuthorId(args.id)
+            if (authorId === user.id) {
               context.req.user = user
               return true
             }
@@ -86,13 +87,34 @@ const isOwner = rule({ cache: 'contextual' })(
 
 export const permissions = shield({
   Query: {
-    users: isAuthenticated
+    users: isAuthenticated,
+    getUser: deny,
+    getPosts: deny
   },
   Mutation: {
     write: isAuthenticated,
     upvote: isAuthenticated,
     downvote: isAuthenticated,
-    delete: isOwner
+    delete: isOwner,
+
+    // Generated mutations
+    AddUserPosts: deny,
+    RemoveUserPosts: deny,
+    MergeUserPosts: deny,
+    CreateUser: deny,
+    UpdateUser: deny,
+    DeleteUser: deny,
+    MergeUser: deny,
+    AddPostVoters: deny,
+    RemovePostVoters: deny,
+    MergePostVoters: deny,
+    AddPostAuthor: deny,
+    RemovePostAuthor: deny,
+    MergePostAuthor: deny,
+    CreatePost: deny,
+    UpdatePost: deny,
+    MergePost: deny,
+    DeletePost: deny
   }
 },
 {
