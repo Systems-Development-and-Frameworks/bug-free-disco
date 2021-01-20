@@ -7,6 +7,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# nuxt-storybook
+.nuxt-storybook
+storybook-static
+
 # Runtime data
 pids
 *.pid

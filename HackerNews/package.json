@@ -12,6 +12,8 @@
     "test": "jest"
   },
   "dependencies": {
+    "@nuxtjs/apollo": "^4.0.1-rc.5",
+    "@nuxtjs/storybook": "^3.3.0",
     "core-js": "^3.6.5",
     "nuxt": "^2.14.6"
   },

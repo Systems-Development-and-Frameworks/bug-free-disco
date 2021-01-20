@@ -2,6 +2,7 @@
   <div id="app">
     <img alt="Hacker News" src="../assets/logo.png" width="50" height="50">
     <Home msg="Welcome to Hackernews" />
+    <test />
   </div>
 </template>
 
