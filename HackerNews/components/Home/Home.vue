@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div>
     <div class="news-list">
       <div class="news-list-wrapper">
         <h1>{{ msg }}</h1>
@@ -139,4 +139,13 @@ li {
 a {
   color: #42b983;
 }
+
+.news-list-wrapper div {
+  padding: 20px;
+}
+
+.news-list-wrapper button {
+  margin: 20px;
+}
+
 </style>

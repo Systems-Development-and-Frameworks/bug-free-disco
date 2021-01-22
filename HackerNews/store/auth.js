@@ -1,5 +1,5 @@
 import { SET_USER, SET_TOKEN, SET_LOADING } from './mutation-types'
-import { LOGIN } from '~/graphql/mutations'
+import { LOGIN, SIGNUP } from '~/graphql/mutations'
 
 export const state = () => ({
   loading: false,
@@ -47,5 +47,23 @@ export const actions = {
     } finally {
       commit(SET_LOADING, false)
     }
+  },
+  async logout ({ commit }) {
+    commit(SET_LOADING, true)
+    this.$apolloHelpers.onLogout()
+    await commit(SET_TOKEN, null)
+    await commit(SET_USER, null)
+    commit(SET_LOADING, false)
+  },
+  async signup ({ commit }, { name, email, password, apollo }) {
+    commit(SET_LOADING, true)
+
+    const res = await apollo.mutate({
+      mutation: SIGNUP,
+      variables: { name, email, password }
+    })
+    const token = res.data.signup
+    return !!token
   }
+
 }

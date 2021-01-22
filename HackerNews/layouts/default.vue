@@ -1,8 +1,22 @@
 <template>
-  <div>
+  <div class="navBar">
+    <NavBar />
+    <div class="img">
+      <img alt="Hacker News" src="../assets/logo.png" width="50" height="50">
+    </div>
     <Nuxt />
   </div>
 </template>
+
+<script>
+import NavBar from '../components/NavBar/NavBar'
+
+export default {
+  components: {
+    NavBar
+  }
+}
+</script>
 
 <style>
 html {
@@ -33,6 +47,12 @@ html {
   padding: 10px 30px;
 }
 
+.img{
+    display: flex;
+  justify-content: center;
+  margin: 40px;
+}
+
 .button--green:hover {
   color: #fff;
   background-color: #3b8070;
@@ -51,5 +71,9 @@ html {
 .button--grey:hover {
   color: #fff;
   background-color: #35495e;
+}
+
+.navBar{
+  margin: 30px;
 }
 </style>

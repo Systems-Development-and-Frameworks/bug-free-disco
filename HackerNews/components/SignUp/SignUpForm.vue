@@ -1,14 +1,25 @@
 <template>
-  <form class="login-form" @submit.prevent="submit">
+  <form class="signup-form" @submit.prevent="submit">
     <fieldset>
       <legend>
-        Login
+        Sign up
       </legend>
       <div>
+        <div><label for="name">Name</label></div>
         <div><label for="email">E-Mail</label></div>
         <div><label for="Password">Password</label></div>
+        <div><label for="rePassword">Reenter password</label></div>
       </div>
       <div>
+        <div>
+          <input
+            id="name"
+            v-model="formData.name"
+            type="name"
+            size="25"
+            name="name"
+          >
+        </div>
         <div>
           <input
             id="email"
@@ -27,12 +38,21 @@
             name="password"
           >
         </div>
+        <div>
+          <input
+            id="rePassword"
+            v-model="formData.rePassword"
+            type="password"
+            size="25"
+            name="rePassword"
+          >
+        </div>
         <div v-if="error" class="error">
           {{ error.message }}
         </div>
         <div>
           <button type="submit">
-            Login
+            Sign up
           </button>
         </div>
       </div>
@@ -48,25 +68,32 @@ export default {
     return {
       error: null,
       formData: {
+        name: '',
         email: '',
-        password: ''
+        password: '',
+        rePassword: ''
       }
     }
   },
   computed: {},
   methods: {
-    ...mapActions('auth', ['login']),
+    ...mapActions('auth', ['signup']),
     async submit () {
       this.error = null
+      if (this.formData.password !== this.formData.rePassword) {
+        this.error = { message: 'The password does not match!' }
+        return
+      }
       try {
-        const success = await this.login({
+        const success = await this.signup({
           ...this.formData,
           apollo: this.$apollo
         })
         if (!success) {
-          this.error = { message: 'Username or password is invalid' }
+          this.error = { message: 'Registration failed' }
         } else {
-          this.$router.push({ path: '/' })
+          alert('Success')
+          this.$router.push({ path: '/login' })
         }
       } catch (err) {
         this.error = { message: err }
@@ -86,17 +113,17 @@ p.alert {
 </style>
 
 <style>
-.login-form fieldset {
+.signup-form fieldset {
   padding: 2rem;
   display: flex;
   flex-direction: row;
 }
 
-.login-form fieldset div {
+.signup-form fieldset div {
   text-align: left;
 }
 
-.login-form fieldset div div {
+.signup-form fieldset div div {
   margin: 20px;
 }
 </style>
