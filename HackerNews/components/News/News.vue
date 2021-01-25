@@ -10,7 +10,7 @@
     <button @click="downVote">
       Downvote
     </button>
-    <button @click="remove">
+    <button v-if="isOwner" @click="remove">
       Remove
     </button>
   </div>
@@ -23,7 +23,19 @@ export default {
     news: {
       title: '',
       body: '',
-      votes: 0
+      votes: 0,
+      author: {
+        id: '',
+        name: '',
+        email: ''
+      }
+    }
+  },
+
+  computed: {
+    isOwner () {
+      console.log(this.$store.state.auth.currentUserID)
+      return this.news.author.id === this.$store.state.auth.currentUserID
     }
   },
 

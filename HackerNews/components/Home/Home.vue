@@ -29,6 +29,8 @@
 <script>
 import News from '../News/News.vue'
 import NewsForm from '../NewsForm/NewsForm.vue'
+import { GET_POSTS } from '~/graphql/queries'
+import { WRITE } from '~/graphql/mutations'
 
 const SortOrder = {
   ASCENDING: 0,
@@ -46,10 +48,6 @@ export default {
       type: String,
       required: false,
       default: 'Welcome to Hackernews'
-    },
-    newsListInput: {
-      type: Array,
-      default: () => []
     }
   },
   data () {
@@ -63,6 +61,7 @@ export default {
       sortOrder: SortOrder.ASCENDING
     }
   },
+
   computed: {
     sortedNewsList () {
       // Sort by votes
@@ -80,9 +79,26 @@ export default {
       )
     }
   },
-  beforeMount () {
-    this.newsList = this.newsListInput
+
+  async created () {
+    try {
+      const res = await this.$apollo.query({
+        query: GET_POSTS
+      })
+      const posts = res.data.posts
+      if (!posts) {
+        console.log('GETPOST: posts undefined')
+        this.newsList = []
+      } else {
+        console.log('GETPOST: posts success')
+        this.newsList = posts
+      }
+    } catch (error) {
+      console.log('GETPOST: ERROR')
+      this.errors.push(error)
+    }
   },
+
   methods: {
     switchSortOrder () {
       if (this.sortOrder === SortOrder.ASCENDING) {
@@ -109,12 +125,32 @@ export default {
     newsRemoveMessage (newsTitle) {
       this.newsList = this.newsList.filter(item => item.title !== newsTitle)
     },
-    newsCreated (news) {
-      this.newsList.push({
-        title: news.title,
-        body: news.body,
-        votes: 0
-      })
+    async newsCreated (news) {
+      const title = news.title
+      this.$apollo.context = {
+        headers: { Authorization: 'Bearer ' + this.$store.state.auth.token }
+      }
+      try {
+        const res = await this.$apollo.mutate({
+          mutation: WRITE,
+          variables: { title }
+        })
+
+        console.log(res)
+
+        const post = res.data.write
+
+        if (post) {
+          this.newsList.push({
+            title: post.title,
+            body: '',
+            votes: 0,
+            author: post.author
+          })
+        }
+      } catch (error) {
+        this.errors.push(error)
+      }
     }
   }
 }
@@ -147,5 +183,4 @@ a {
 .news-list-wrapper button {
   margin: 20px;
 }
-
 </style>
