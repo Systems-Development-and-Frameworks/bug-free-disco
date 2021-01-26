@@ -6,7 +6,7 @@
       </legend>
       <div>
         <div><label for="email">E-Mail</label></div>
-        <div><label for="Password">Password</label></div>
+        <div><label for="password">Password</label></div>
       </div>
       <div>
         <div>
@@ -20,7 +20,7 @@
         </div>
         <div>
           <input
-            id="Password"
+            id="password"
             v-model="formData.password"
             type="password"
             size="25"

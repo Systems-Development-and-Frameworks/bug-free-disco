@@ -40,7 +40,9 @@ export const actions = {
         this.$apolloHelpers.onLogin(token)
         await commit(SET_TOKEN, token)
         const decoded = jwtDecode(token)
-        await commit(SET_USER_ID, decoded.id)
+        if (decoded) {
+          await commit(SET_USER_ID, decoded.id)
+        }
         return true
       }
     } catch (error) {

@@ -1,10 +1,11 @@
 <template>
   <div>
     <div>
-      <a href="">Home</a>
-      <a href="">News</a>
+      <NuxtLink to="/">
+        Home
+      </NuxtLink>
     </div>
-    <div v-if="!isLoggedIn">
+    <div id="logSignDiv" v-if="!isLoggedIn">
       <NuxtLink to="/login">
         Login
       </NuxtLink>
@@ -12,7 +13,7 @@
         Sign up
       </NuxtLink>
     </div>
-    <div v-else>
+    <div id="logoutDiv" v-else>
       <button @click="exit">
         Log out
       </button>

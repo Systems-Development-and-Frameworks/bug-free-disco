@@ -1,5 +1,6 @@
 
 import cookie from 'cookie'
+import jwtDecode from 'jwt-decode'
 
 export const actions = {
   nuxtServerInit (store, context) {
@@ -10,5 +11,10 @@ export const actions = {
     const token = parsedCookies['apollo-token']
     if (!token) { return }
     store.commit('auth/SET_TOKEN', token)
+    const decoded = jwtDecode(token)
+    console.log(decoded)
+    if (decoded) {
+      store.commit('auth/SET_USER_ID', decoded.id)
+    }
   }
 }

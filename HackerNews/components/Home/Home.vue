@@ -3,7 +3,7 @@
     <div class="news-list">
       <div class="news-list-wrapper">
         <h1>{{ msg }}</h1>
-        <button @click="switchSortOrder">
+        <button id="switchOrderBtn" @click="switchSortOrder">
           reverse sort
         </button>
         <h2 v-if="isEmpty()">
@@ -87,14 +87,11 @@ export default {
       })
       const posts = res.data.posts
       if (!posts) {
-        console.log('GETPOST: posts undefined')
         this.newsList = []
       } else {
-        console.log('GETPOST: posts success')
         this.newsList = posts
       }
     } catch (error) {
-      console.log('GETPOST: ERROR')
       this.errors.push(error)
     }
   },
@@ -136,16 +133,16 @@ export default {
           variables: { title }
         })
 
-        console.log(res)
-
         const post = res.data.write
 
         if (post) {
           this.newsList.push({
+            id: post.id,
             title: post.title,
             body: '',
             votes: 0,
-            author: post.author
+            author: post.author,
+            voters: []
           })
         }
       } catch (error) {
