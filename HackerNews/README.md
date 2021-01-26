@@ -7,6 +7,7 @@
 $ npm install
 
 # serve with hot reload at localhost:3000
+# make sure you started the backend and database before (instruction in bug-free-disco/backend/README.md)
 $ npm run dev
 
 # build for production and launch server
