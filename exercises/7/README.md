@@ -29,7 +29,7 @@ In this exercise, we will connect our Webapp with the backend. During that, we c
       * "SSR/SSG" as Rendering mode
       * The deployment target you decided on in Instruction #0.
       * [@nuxtjs/pwa](https://pwa.nuxtjs.org/) for the progressive web app
-   * Copy all relevant code (most importantly your components) from your old `webapp/` folder to your new one. 
+   * Copy all relevant code (most importantly your components including your specs and stories) from your old `webapp/` folder to your new one. 
    * Delete the old `webapp/` folder. Make sure the new one is in the same location.
    * Commit this refactoring in a *separate* PR and merge it into your `main` branch. This will keep the content of "Files Changed" tab
    small and help mentors to review your code.
@@ -56,23 +56,34 @@ In this exercise, we will connect our Webapp with the backend. During that, we c
    Furthermore, you might want to use [Vuex](https://vuex.vuejs.org/) for a
    globally accessible `isAuthenticated` getter method. There is a [nuxt integration](https://nuxtjs.org/docs/2.x/directory-structure/store).
 
-   * Hint: To initialize the store in full static mode, you could use a [plugin](https://nuxtjs.org/docs/2.x/directory-structure/plugins/):
+   * Hint: Due to a bug, `nuxt-apollo` does not properly read the cookie containing `apollo-token` in SSR. See this [PR](https://github.com/nuxt-community/apollo-module/pull/358). If you need `this.$apolloHelpers.getToken` in SSR you could either follow the PR or parse the cookie like this:
    ```js
-    export default function ({ app, store }) {
-      const token = app.$apolloHelpers.getToken()
-      store.commit('auth/setToken', token)
-    }
+   // in store/index.js
+   import cookie from 'cookie'
+
+   export const actions = {
+     nuxtServerInit(store, context) {
+       const { req } = context.ssrContext
+       if (!req) return // static site generation
+       const parsedCookies = cookie.parse(req.headers.cookie)
+       const token = parsedCookies['apollo-token']
+       if (!token) return
+       store.commit('auth/setToken', token)
+     },
+   }
    ```
    * Hint2: You might want to decode the id of the current user from the JWT with [jwt-decode](https://github.com/auth0/jwt-decode).
 
-6. Make sure that your `upvote`, `delete` and `write` mutations hit
+6. Make sure that your `upvote` and `write` mutations hit
    your backend. If you use `vue-apollo`, it will update your cache
-   automatically if you request the `ID` field in your mutations.
+   automatically if you request the `ID` field in your mutations. 
+   
 
 7. Your buttons should behave according to the authentication state. E.g. you
    could only display `upvote` when the user is logged in. Alternatively,
-   you could redirect to `/login` if the user is not logged in. Also, show
-   `delete` only for authors, same goes for `edit` (if you have such a button).
+   you could redirect to `/login` if the user is not logged in.
+   Add a `delete` and `edit` button to your news-entries which only shows for authors.
+   Connecting them to your backend is optional though.
 
 8. PR Review:
   * Review a pull request of another team.
@@ -99,7 +110,7 @@ In this exercise, we will connect our Webapp with the backend. During that, we c
 
 :star: For an upvote button that behaves according to the authentication state of your user
 
-:star: For a delete button that is only visible to the author of the post.
+:star: For a delete and edit button that is only visible to the author of the post.
 
 :star: For [Lighthouse](https://developers.google.com/web/tools/lighthouse) reporting that your production website is installable as PWA (except HTTPS).
 
