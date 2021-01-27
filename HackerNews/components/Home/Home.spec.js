@@ -6,29 +6,26 @@ import Vuex from 'vuex'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
-const currentUserID = "1"
+const currentUserID = '1'
 
 describe('Home', () => {
   let actions
   let getters
-  let store
 
-  store = new Vuex.Store({
+  const store = new Vuex.Store({
     modules: {
       auth: {
         namespaced: true,
         state: () => ({
           loading: false,
-          currentUserID: currentUserID,
-          token: "testToken",
+          currentUserID,
+          token: 'testToken'
         }),
         actions,
-        getters,
-      },
-    },
+        getters
+      }
+    }
   })
-
- 
 
   it('empty list', () => {
     const data = {
@@ -45,44 +42,46 @@ describe('Home', () => {
   describe('pre filled news list', () => {
     let data
     beforeEach(() => {
-      data = {newsList: [
-        {
-          id: "1",
-          title: 'VueJS',
-          body: 'VueJS is nice',
-          votes: 2,
-          author: {
-            id: '5',
-            name: 'saddddddad',
-            email: 'asdddddad'
+      data = {
+        newsList: [
+          {
+            id: '1',
+            title: 'VueJS',
+            body: 'VueJS is nice',
+            votes: 2,
+            author: {
+              id: '5',
+              name: 'saddddddad',
+              email: 'asdddddad'
+            },
+            voters: []
           },
-          voters: []
-        },
-        {
-          id: '1',
-          title: 'Angular',
-          body: 'Angular is the best!',
-          votes: 1,
-          author: {
+          {
+            id: '1',
+            title: 'Angular',
+            body: 'Angular is the best!',
+            votes: 1,
+            author: {
+              id: '3',
+              name: 'sdadadad',
+              email: 'asddddad'
+            },
+            voters: []
+          },
+          {
             id: '3',
-            name: 'sdadadad',
-            email: 'asddddad'
-          },
-          voters: []
-        },
-        {
-          id: "3",
-          title: 'Java',
-          body: 'java is perfect!',
-          votes: 0,
-          author: {
-            id: '2',
-            name: 'sadad',
-            email: 'asdad'
-          },
-          voters: []
-        }
-      ]}
+            title: 'Java',
+            body: 'java is perfect!',
+            votes: 0,
+            author: {
+              id: '2',
+              name: 'sadad',
+              email: 'asdad'
+            },
+            voters: []
+          }
+        ]
+      }
     })
 
     it('not empty list', () => {
@@ -91,7 +90,7 @@ describe('Home', () => {
         store,
         data: () => data
       })
-      
+
       expect(wrapper.findAllComponents(News).length).toBe(3)
     })
 
@@ -104,8 +103,7 @@ describe('Home', () => {
       const button = wrapper.find('#switchOrderBtn')
       button.trigger('click')
 
-      expect(wrapper.vm.sortedNewsList[0].id).toBe("3")
+      expect(wrapper.vm.sortedNewsList[0].id).toBe('3')
     })
-
   })
 })

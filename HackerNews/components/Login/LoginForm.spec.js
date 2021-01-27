@@ -1,53 +1,38 @@
-import { shallowMount, mount, createLocalVue  } from '@vue/test-utils'
+import { shallowMount, createLocalVue } from '@vue/test-utils'
 import LoginForm from '@/components/Login/LoginForm.vue'
 import Vuex from 'vuex'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
-const currentUserID = "1"
-
-const newsTemplate = {id: '',
-title: '',
-body: '',
-votes: 0,
-author: {
-  id: '',
-  name: '',
-  email: ''
-},
-voters: []}
-
 
 describe('LoginForm.vue', () => {
   let actions
   let getters
-  let store
-
 
   const setupWrapper = () => {
-    store = new Vuex.Store({
+    const store = new Vuex.Store({
       modules: {
         auth: {
           namespaced: true,
           state: () => ({
             loading: false,
             currentUser: null,
-            token: null,
+            token: null
           }),
           actions,
-          getters,
-        },
-      },
+          getters
+        }
+      }
     })
     return shallowMount(LoginForm, { store, localVue })
   }
 
   beforeEach(() => {
     getters = {
-      isLoggedIn: () => false,
+      isLoggedIn: () => false
     }
     actions = {
-      login: jest.fn().mockResolvedValue(true),
+      login: jest.fn().mockResolvedValue(true)
     }
   })
 
@@ -65,21 +50,18 @@ describe('LoginForm.vue', () => {
     })
 
     describe('when credentials are wrong', () => {
-        beforeEach(() => {
-          actions.login = jest.fn().mockResolvedValue(false)
-        })
-    
-        it('shows wrong credentials error', async () => {
-          const wrapper = setupWrapper()
-          await login(wrapper)
-          await localVue.nextTick()
-          expect(wrapper.find('.error').text()).toContain(
-            'Username or password is invalid'
-          )
-        })
+      beforeEach(() => {
+        actions.login = jest.fn().mockResolvedValue(false)
       })
-})
 
-
-
+      it('shows wrong credentials error', async () => {
+        const wrapper = setupWrapper()
+        await login(wrapper)
+        await localVue.nextTick()
+        expect(wrapper.find('.error').text()).toContain(
+          'Username or password is invalid'
+        )
+      })
+    })
+  })
 })

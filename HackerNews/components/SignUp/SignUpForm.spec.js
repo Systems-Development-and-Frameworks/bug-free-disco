@@ -1,53 +1,38 @@
-import { shallowMount, mount, createLocalVue  } from '@vue/test-utils'
+import { shallowMount, createLocalVue } from '@vue/test-utils'
 import SignUpForm from '@/components/SignUp/SignUpForm.vue'
 import Vuex from 'vuex'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
-const currentUserID = "1"
-
-const newsTemplate = {id: '',
-title: '',
-body: '',
-votes: 0,
-author: {
-  id: '',
-  name: '',
-  email: ''
-},
-voters: []}
-
 
 describe('LoginForm.vue', () => {
   let actions
   let getters
-  let store
-
 
   const setupWrapper = () => {
-    store = new Vuex.Store({
+    const store = new Vuex.Store({
       modules: {
         auth: {
           namespaced: true,
           state: () => ({
             loading: false,
             currentUser: null,
-            token: null,
+            token: null
           }),
           actions,
-          getters,
-        },
-      },
+          getters
+        }
+      }
     })
     return shallowMount(SignUpForm, { store, localVue })
   }
 
   beforeEach(() => {
     getters = {
-      isLoggedIn: () => false,
+      isLoggedIn: () => false
     }
     actions = {
-      signup: jest.fn().mockResolvedValue(true),
+      signup: jest.fn().mockResolvedValue(true)
     }
   })
 
@@ -61,28 +46,28 @@ describe('LoginForm.vue', () => {
     }
 
     it('shows no error', async () => {
+      const wrapper = setupWrapper()
+      await signUp(wrapper)
+      expect(wrapper.find('.error').exists()).toBe(false)
+    })
+
+    describe('when registration failed', () => {
+      beforeEach(() => {
+        actions.signup = jest.fn().mockResolvedValue(false)
+      })
+
+      it('shows registration failed', async () => {
         const wrapper = setupWrapper()
         await signUp(wrapper)
-        expect(wrapper.find('.error').exists()).toBe(false)
+        await localVue.nextTick()
+        expect(wrapper.find('.error').text()).toContain(
+          'Registration failed'
+        )
       })
+    })
+  })
 
-      describe('when registration failed', () => {
-        beforeEach(() => {
-          actions.signup = jest.fn().mockResolvedValue(false)
-        })
-    
-        it('shows registration failed', async () => {
-          const wrapper = setupWrapper()
-          await signUp(wrapper)
-          await localVue.nextTick()
-          expect(wrapper.find('.error').text()).toContain(
-            'Registration failed'
-          )
-        })
-      })
-})
-
-describe('form submit with wrong rePassword', () => {
+  describe('form submit with wrong rePassword', () => {
     const signUp = async (wrapper) => {
       wrapper.find('input#email').setValue('test@test.de')
       wrapper.find('input#password').setValue('12345678')
@@ -92,14 +77,12 @@ describe('form submit with wrong rePassword', () => {
     }
 
     it('shows the rePassword is wrong', async () => {
-        const wrapper = setupWrapper()
-        await signUp(wrapper)
-        await localVue.nextTick()
-        expect(wrapper.find('.error').text()).toContain(
-          'The password does not match!'
-        )
-      })
-
-    
-})
+      const wrapper = setupWrapper()
+      await signUp(wrapper)
+      await localVue.nextTick()
+      expect(wrapper.find('.error').text()).toContain(
+        'The password does not match!'
+      )
+    })
+  })
 })
