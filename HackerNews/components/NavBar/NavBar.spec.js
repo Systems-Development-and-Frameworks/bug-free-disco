@@ -10,7 +10,7 @@ describe('NavBar', () => {
 
     describe('you are logged in', () => {
 
-        let actions
+  let actions
   let getters
   let store
 

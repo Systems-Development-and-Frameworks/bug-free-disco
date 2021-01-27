@@ -3,17 +3,20 @@
     <h1 class="text-danger">
       {{ news.title }}({{ news.votes }})
     </h1>
+    <div v-if="error" class="error">
+      {{ error.message }}
+    </div>
     <p>{{ news.body }}</p>
-    <button id="upvoteBtn" v-if="!alreadyVoted" @click="upVote">
+    <button v-if="!alreadyVoted" id="upvoteBtn" @click="upVote">
       Upvote
     </button>
-    <button id="downvoteBtn" v-if="!alreadyVoted" @click="downVote">
+    <button v-if="!alreadyVoted" id="downvoteBtn" @click="downVote">
       Downvote
     </button>
-    <button id="removeBtn" v-if="isOwner" @click="remove">
+    <button v-if="isOwner" id="removeBtn" @click="remove">
       Remove
     </button>
-    <button id="editBtn" v-if="isOwner">
+    <button v-if="isOwner" id="editBtn">
       Edit
     </button>
   </div>
@@ -37,6 +40,10 @@ export default {
       },
       voters: []
     }
+
+  },
+  data () {
+    return { error: null }
   },
 
   computed: {
@@ -61,9 +68,12 @@ export default {
           this.news.votes += 1
           this.$emit('updateItem', this.news.title, this.news.votes)
           this.news.voters.push({ id: this.$store.state.auth.currentUserID })
+        } else {
+          this.error = { message: 'Upvote request failed!' }
         }
       } catch (error) {
-        console.log(JSON.stringify(error, null, 2))
+        console.log('error')
+        this.error = { message: 'Oops..! Someting went wrong' }
       }
     },
     async downVote () {
@@ -78,9 +88,11 @@ export default {
           this.news.votes -= 1
           this.$emit('updateItem', this.news.title, this.news.votes)
           this.news.voters.push({ id: this.$store.state.auth.currentUserID })
+        } else {
+          this.error = { message: 'Downvote request failed!' }
         }
       } catch (error) {
-        console.log(JSON.stringify(error, null, 2))
+        this.error = { message: 'Oops..! Someting went wrong' }
       }
     },
     remove () {

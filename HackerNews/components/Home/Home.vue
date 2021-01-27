@@ -21,7 +21,7 @@
           />
         </div>
       </div>
-      <NewsForm :news-list="newsList" @createItem="newsCreated" />
+      <NewsForm id="newsForm" :news-list="newsList" @createItem="newsCreated" />
     </div>
   </div>
 </template>

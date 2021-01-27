@@ -5,7 +5,7 @@
         Home
       </NuxtLink>
     </div>
-    <div id="logSignDiv" v-if="!isLoggedIn">
+    <div v-if="!isLoggedIn" id="logSignDiv">
       <NuxtLink to="/login">
         Login
       </NuxtLink>
@@ -13,7 +13,7 @@
         Sign up
       </NuxtLink>
     </div>
-    <div id="logoutDiv" v-else>
+    <div v-else id="logoutDiv">
       <button @click="exit">
         Log out
       </button>

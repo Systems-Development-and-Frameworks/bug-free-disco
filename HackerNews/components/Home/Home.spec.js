@@ -20,7 +20,7 @@ describe('Home', () => {
         state: () => ({
           loading: false,
           currentUserID: currentUserID,
-          token: null,
+          token: "testToken",
         }),
         actions,
         getters,
@@ -28,6 +28,7 @@ describe('Home', () => {
     },
   })
 
+ 
 
   it('empty list', () => {
     const data = {

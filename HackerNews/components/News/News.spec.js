@@ -7,17 +7,6 @@ const localVue = createLocalVue()
 localVue.use(Vuex)
 const currentUserID = "1"
 
-const newsTemplate = {id: '',
-title: '',
-body: '',
-votes: 0,
-author: {
-  id: '',
-  name: '',
-  email: ''
-},
-voters: []}
-
 
 describe('News', () => {
   let actions
@@ -41,12 +30,58 @@ describe('News', () => {
   })
 
 
+let newsTemplate;
+beforeEach(() => {
+  newsTemplate = {id: '',
+  title: '',
+  body: '',
+  votes: 0,
+  author: {
+    id: '',
+    name: '',
+    email: ''
+  },
+  voters: []}
+})
+
+it('upvote failed', async () => {
+  const mutate = jest.fn().mockResolvedValue({data: { }})
+const mocks = {$apollo: {
+mutate
+}}
+  const upVote = jest.spyOn(News.methods, 'upVote')
+  const news = newsTemplate
+  const wrapper = shallowMount(News, {
+    localVue,
+    store,
+    mocks,
+    propsData: {
+      news:  news
+    }
+  })
+  const button = wrapper.find('#upvoteBtn')
+  await button.trigger('click')
+  await Vue.nextTick()
+  expect(mutate).toBeCalled()
+  expect(upVote).toHaveBeenCalledTimes(1)
+  expect(wrapper.find('.error').text()).toContain(
+    'Upvote request failed!'
+  )
+})
+
   it('should correctly trigger when the upvote button is clicked', async () => {
+    const mutate = jest.fn().mockResolvedValue({data: {
+      upvote: {post: 'somePostValue'}
+    }})
+const mocks = {$apollo: {
+  mutate
+}}
     const upVote = jest.spyOn(News.methods, 'upVote')
     const news = newsTemplate
     const wrapper = shallowMount(News, {
       localVue,
       store,
+      mocks,
       propsData: {
         news:  news
       }
@@ -54,15 +89,51 @@ describe('News', () => {
     const button = wrapper.find('#upvoteBtn')
     button.trigger('click')
     await Vue.nextTick()
-    expect(upVote).toHaveBeenCalledTimes(1)
+    expect(mutate).toBeCalled()
+    expect(upVote).toBeCalled()
+    expect(news.votes === 1)
   })
 
-  it('should correctly trigger when the downvote button is clicked', async () => {
+  it('downvote failed', async () => {
+    const mutate = jest.fn().mockResolvedValue({data: {  }})
+  const mocks = {$apollo: {
+  mutate
+  }}
     const downVote = jest.spyOn(News.methods, 'downVote')
     const news = newsTemplate
     const wrapper = shallowMount(News, {
       localVue,
       store,
+      mocks,
+      propsData: {
+        news:  news
+      }
+    })
+    const button = wrapper.find('#downvoteBtn')
+    await button.trigger('click')
+    await Vue.nextTick()
+    expect(mutate).toBeCalled()
+    expect(downVote).toHaveBeenCalledTimes(1)
+    expect(wrapper.find('.error').text()).toContain(
+      'Downvote request failed!'
+    )
+  })
+
+  
+
+  it('should correctly trigger when the downvote button is clicked', async () => {
+    const mutate = jest.fn().mockResolvedValue({data: {
+      downvote: {post: 'somePostValue'}
+    }})
+const mocks = {$apollo: {
+  mutate
+}}
+    const downVote = jest.spyOn(News.methods, 'downVote')
+    const news = newsTemplate
+    const wrapper = shallowMount(News, {
+      localVue,
+      store,
+      mocks,
       propsData: {
         news:  news
       }
@@ -70,7 +141,8 @@ describe('News', () => {
     const button = wrapper.find('#downvoteBtn')
     button.trigger('click')
     await Vue.nextTick()
-    expect(downVote).toHaveBeenCalledTimes(1)
+    expect(mutate).toBeCalled()
+    expect(downVote).toBeCalled()
   })
 
   it('should correctly trigger when the remove button is clicked', async () => {
