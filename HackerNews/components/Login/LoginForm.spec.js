@@ -1,8 +1,10 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import LoginForm from '@/components/Login/LoginForm.vue'
 import Vuex from 'vuex'
+import BootstrapVue from 'bootstrap-vue'
 
 const localVue = createLocalVue()
+localVue.use(BootstrapVue)
 localVue.use(Vuex)
 
 describe('LoginForm.vue', () => {
@@ -38,8 +40,8 @@ describe('LoginForm.vue', () => {
 
   describe('form submit', () => {
     const login = async (wrapper) => {
-      wrapper.find('input#email').setValue('test@test.de')
-      wrapper.find('input#password').setValue('12345678')
+      wrapper.find('#input-1').setValue('test@test.de')
+      wrapper.find('#input-2').setValue('12345678')
       await wrapper.find('form').trigger('submit')
     }
 

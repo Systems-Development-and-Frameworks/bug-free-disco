@@ -1,10 +1,11 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
-
 import Home from '@/components/Home/Home.vue'
 import News from '@/components/News/News.vue'
 import Vuex from 'vuex'
+import BootstrapVue from 'bootstrap-vue'
 
 const localVue = createLocalVue()
+localVue.use(BootstrapVue)
 localVue.use(Vuex)
 const currentUserID = '1'
 

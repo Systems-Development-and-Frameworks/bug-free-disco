@@ -9,6 +9,13 @@
         </div>
       </b-row>
       <b-row>
+        <div v-if="error" class="error">
+          <p class="alert">
+            {{ error.message }}
+          </p>
+        </div>
+      </b-row>
+      <b-row>
         <div class="text-left">
           <b-button
             v-if="!alreadyVoted"
@@ -71,6 +78,7 @@ export default {
   },
   data () {
     return {
+      error: null,
       upvoteLabel: 'Upvote',
       downvoteLabel: 'Downvote',
       removeLabel: 'Remove',
@@ -135,6 +143,11 @@ export default {
 </script>
 
 <style scoped>
+p.alert {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
 .b-card-news {
   margin: 2px 0px;
 }

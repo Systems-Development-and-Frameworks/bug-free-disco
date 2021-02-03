@@ -24,7 +24,7 @@
       <p v-if="error" class="alert">
         <b>{{ error.name }}</b>
       </p>
-      <b-button type="submit" variant="primary">
+      <b-button type="submit" variant="primary" id="createNews">
         Create news
       </b-button>
     </b-form>
@@ -54,7 +54,6 @@ export default {
   },
   computed: {
     isUnique () {
-      console.log('Title: ', this.title)
       if (this.newsInNewsList(this.title)) {
         return false
       }

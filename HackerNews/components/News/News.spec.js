@@ -2,8 +2,10 @@ import { shallowMount, createLocalVue } from '@vue/test-utils'
 import News from '@/components/News/News.vue'
 import Vuex from 'vuex'
 import Vue from 'vue'
+import BootstrapVue from 'bootstrap-vue'
 
 const localVue = createLocalVue()
+localVue.use(BootstrapVue)
 localVue.use(Vuex)
 const currentUserID = '1'
 
@@ -183,7 +185,7 @@ describe('News', () => {
     expect(wrapper.text()).toMatch('TestTitle')
   })
 
-  it('should not show button remove and edit', () => {
+  it('should not show button remove', () => {
     const news = newsTemplate
     news.author.id = 'not the current ID'
     const wrapper = shallowMount(News, {
@@ -194,10 +196,9 @@ describe('News', () => {
       }
     })
     expect(wrapper.find('#removeBtn').exists()).toBe(false)
-    expect(wrapper.find('#editBtn').exists()).toBe(false)
   })
 
-  it('should show button remove and edit', () => {
+  it('should show button remove', () => {
     const news = newsTemplate
     news.author.id = currentUserID
     const wrapper = shallowMount(News, {
@@ -208,7 +209,6 @@ describe('News', () => {
       }
     })
     expect(wrapper.find('#removeBtn').exists()).toBe(true)
-    expect(wrapper.find('#editBtn').exists()).toBe(true)
   })
 
   it('should not show button upvote and downvote', () => {
