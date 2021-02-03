@@ -1,36 +1,46 @@
 <template>
-  <div>
-    <div class="news-list">
-      <div class="news-list-wrapper">
-        <h1>{{ msg }}</h1>
-        <button id="switchOrderBtn" @click="switchSortOrder">
-          reverse sort
-        </button>
-        <h2 v-if="isEmpty()">
-          The list is empty :(
-        </h2>
-        <div
-          v-for="(news, index) in sortedNewsList"
-          :key="index"
-          class="news-holder"
-        >
-          <News
-            :news="news"
-            @updateItem="newsUpdateMessage"
-            @removeItem="newsRemoveMessage"
-          />
-        </div>
-      </div>
-      <NewsForm id="newsForm" :news-list="newsList" @createItem="newsCreated" />
-    </div>
-  </div>
+  <b-row v-if="isLoggedIn" cols="1" cols-lg="3">
+    <b-col md class="item text-center">
+      <b-card cols="2" cols-md="1" class="b-card-news">
+        <b-col>
+          <b-row><h2>Actions</h2></b-row>
+          <b-row>
+            <div class="text-left">
+              <NewsForm id="newsForm" :news-list="newsList" @createItem="newsCreated" />
+            </div>
+          </b-row>
+          <b-row>
+            <div class="text-left">
+              <b-button id="switchOrderBtn" class="action-button" @click="switchSortOrder">
+                Reverse sort
+              </b-button>
+            </div>
+          </b-row>
+        </b-col>
+      </b-card>
+    </b-col>
+    <b-col v-for="(news, index) in sortedNewsList" :key="index" md class="item text-center">
+      <News
+        :news="news"
+        @updateItem="newsUpdateMessage"
+        @removeItem="newsRemoveMessage"
+      />
+    </b-col>
+    <b-col v-if="isEmpty()" md class="item text-center">
+      <p>The list is empty :(</p>
+    </b-col>
+  </b-row>
+  <b-row v-else cols="1" cols-lg="3">
+    <h1>Please login first</h1>
+  </b-row>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import News from '../News/News.vue'
 import NewsForm from '../NewsForm/NewsForm.vue'
 import { GET_POSTS } from '~/graphql/queries'
-import { WRITE } from '~/graphql/mutations'
+import { WRITE, DELETE, DOWNVOTE, UPVOTE } from '~/graphql/mutations'
 
 const SortOrder = {
   ASCENDING: 0,
@@ -53,16 +63,13 @@ export default {
   data () {
     return {
       errors: [],
-      newNews: {
-        title: '',
-        body: ''
-      },
       newsList: [],
       sortOrder: SortOrder.ASCENDING
     }
   },
 
   computed: {
+    ...mapGetters('auth', ['isLoggedIn']),
     sortedNewsList () {
       // Sort by votes
       const compareAscendent = function (a, b) {
@@ -107,30 +114,53 @@ export default {
     isEmpty () {
       return this.newsList.length <= 0
     },
-    newsUpdateMessage (newsTitle, newsVotes) {
-      this.newsList = this.newsList.map((item) => {
-        if (item.title === newsTitle) {
-          return {
-            ...item,
-            votes: newsVotes
-          }
-        }
+    async newsUpdateMessage (newsTitle, newsVotes) {
+      try {
+        const news = this.newsList.find(n => n.title === newsTitle)
+        const res = await this.$apollo.mutate({
+          mutation: news.votes > newsVotes ? DOWNVOTE : UPVOTE,
+          variables: { id: news.id }
+        })
 
-        return item
-      })
+        const post = news.votes > newsVotes ? res.data.downvote : res.data.upvote
+
+        if (post) {
+          this.newsList = this.newsList.map((item) => {
+            if (item.title === post.title) {
+              return {
+                ...item,
+                votes: post.votes
+              }
+            }
+            return item
+          })
+        }
+      } catch (error) {
+        this.errors.push(error)
+      }
     },
-    newsRemoveMessage (newsTitle) {
-      this.newsList = this.newsList.filter(item => item.title !== newsTitle)
+    async newsRemoveMessage (newsTitle) {
+      try {
+        const news = this.newsList.find(n => n.title === newsTitle)
+        const res = await this.$apollo.mutate({
+          mutation: DELETE,
+          variables: { id: news.id }
+        })
+
+        const post = res.data.delete
+
+        if (post) {
+          this.newsList = this.newsList.filter(item => item.title !== post.title)
+        }
+      } catch (error) {
+        this.errors.push(error)
+      }
     },
     async newsCreated (news) {
-      const title = news.title
-      this.$apollo.context = {
-        headers: { Authorization: 'Bearer ' + this.$store.state.auth.token }
-      }
       try {
         const res = await this.$apollo.mutate({
           mutation: WRITE,
-          variables: { title }
+          variables: { title: news }
         })
 
         const post = res.data.write
@@ -155,29 +185,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-
-a {
-  color: #42b983;
-}
-
-.news-list-wrapper div {
-  padding: 20px;
-}
-
-.news-list-wrapper button {
-  margin: 20px;
+.b-card-news {
+  margin: 2px 0px;
 }
 </style>

@@ -1,76 +1,78 @@
 <template>
-  <form @submit.prevent="checkForm">
-    <p v-if="errors.length" class="alert">
-      <b>Please correct the following error(s):</b>
-    </p>
+  <ValidationObserver ref="observer">
+    <b-form slot-scope="{ validate }" @submit.prevent="validate().then(checkForm)">
+      <ValidationProvider :rules="`required|min:8|unique:${isUnique}`" name="Name">
+        <b-form-group
+          id="input-group-1"
+          slot-scope="{ valid, errors }"
+          label="Title:"
+          label-for="input-1"
+        >
+          <b-form-input
+            id="input-1"
+            v-model="title"
+            type="text"
+            placeholder="Enter the news title"
+            :state="errors[0] ? false : (valid ? true : null)"
+          />
+          <b-form-invalid-feedback>
+            {{ errors[0] }}
+          </b-form-invalid-feedback>
+        </b-form-group>
+      </ValidationProvider>
 
-    <ul>
-      <li v-for="(error, index) in errors" :key="index">
-        {{ error }}
-      </li>
-    </ul>
-
-    <label for="Title">Title</label>
-    <input id="Title" v-model="news.title">
-    <label for="Body">Body</label>
-    <input id="Body" v-model="news.body">
-    <button type="submit">
-      Create
-    </button>
-  </form>
+      <p v-if="error" class="alert">
+        <b>{{ error.name }}</b>
+      </p>
+      <b-button type="submit" variant="primary">
+        Create news
+      </b-button>
+    </b-form>
+  </ValidationObserver>
 </template>
 
 <script>
+import { ValidationObserver, ValidationProvider } from 'vee-validate'
+
 export default {
   name: 'NewsForm',
+  components: {
+    ValidationObserver,
+    ValidationProvider
+  },
   props: {
     newsList: {
       type: Array,
       required: true
     }
   },
-  data () {
+  data: () => {
     return {
-      errors: [],
-      news: {
-        title: '',
-        body: ''
+      error: null,
+      title: ''
+    }
+  },
+  computed: {
+    isUnique () {
+      console.log('Title: ', this.title)
+      if (this.newsInNewsList(this.title)) {
+        return false
       }
+      return true
     }
   },
   methods: {
-    checkForm (e) {
-      if (this.news.title && !this.newsInNewsList(this.news.title)) {
-        this.errors = []
-        this.$emit('createItem', this.news)
-        this.news = { title: '', body: '' }
-        return true
-      }
-
-      this.errors = []
-
-      if (!this.news.title) {
-        this.errors.push('Title required.')
-      }
-
-      if (this.newsInNewsList(this.news.title)) {
-        this.errors.push(
-          'A news with title (' +
-            this.news.title +
-            ') is already contained in the list of news'
-        )
-      }
-
-      e.preventDefault()
+    checkForm () {
+      this.$emit('createItem', this.title)
+      this.title = ''
     },
     newsInNewsList (newsTitle) {
-      return this.newsList.map(n => n.title).includes(newsTitle)
+      return this.newsList.find(n => n.title === newsTitle)
     }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 p.alert {
   color: #a94442;

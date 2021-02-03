@@ -1,66 +1,79 @@
 <template>
-  <form class="login-form" @submit.prevent="submit">
-    <fieldset>
-      <legend>
-        Login
-      </legend>
-      <div>
-        <div><label for="email">E-Mail</label></div>
-        <div><label for="password">Password</label></div>
-      </div>
-      <div>
-        <div>
-          <input
-            id="email"
-            v-model="formData.email"
-            type="email"
-            size="25"
-            name="email"
+  <b-card title="Login" md="6" offset-md="3" class="item text-center">
+    <ValidationObserver ref="observer">
+      <b-form slot-scope="{ validate }" @submit.prevent="validate().then(handleSubmit)">
+        <ValidationProvider rules="required|email" name="Email">
+          <b-form-group
+            id="input-group-1"
+            slot-scope="{ valid, errors }"
+            label="Email:"
+            label-for="input-1"
           >
-        </div>
-        <div>
-          <input
-            id="password"
-            v-model="formData.password"
-            type="password"
-            size="25"
-            name="password"
+            <b-form-input
+              id="input-1"
+              v-model="email"
+              type="email"
+              :state="errors[0] ? false : (valid ? true : null)"
+              placeholder="Enter the email"
+            />
+            <b-form-invalid-feedback>
+              {{ errors[0] }}
+            </b-form-invalid-feedback>
+          </b-form-group>
+        </ValidationProvider>
+        <ValidationProvider rules="required|min:8" name="Password" vid="password">
+          <b-form-group
+            id="input-group-2"
+            slot-scope="{ valid, errors }"
+            label="Password:"
+            label-for="input-2"
           >
-        </div>
-        <div v-if="error" class="error">
-          {{ error.message }}
-        </div>
-        <div>
-          <button type="submit">
-            Login
-          </button>
-        </div>
-      </div>
-    </fieldset>
-  </form>
+            <b-form-input
+              id="input-2"
+              v-model="password"
+              type="password"
+              placeholder="Enter the password"
+              :state="errors[0] ? false : (valid ? true : null)"
+            />
+            <b-form-invalid-feedback>
+              {{ errors[0] }}
+            </b-form-invalid-feedback>
+          </b-form-group>
+        </ValidationProvider>
+        <b-button type="submit" variant="primary">
+          Login
+        </b-button>
+      </b-form>
+    </ValidationObserver>
+  </b-card>
 </template>
 
 <script>
 import { mapActions } from 'vuex'
+import { ValidationObserver, ValidationProvider } from 'vee-validate'
 
 export default {
+  components: {
+    ValidationObserver,
+    ValidationProvider
+  },
   data () {
     return {
       error: null,
-      formData: {
-        email: '',
-        password: ''
-      }
+      email: '',
+      password: ''
     }
   },
-  computed: {},
+  computed: {
+  },
   methods: {
     ...mapActions('auth', ['login']),
-    async submit () {
+    async handleSubmit () {
       this.error = null
       try {
+        const formData = { email: this.email, password: this.password }
         const success = await this.login({
-          ...this.formData,
+          ...formData,
           apollo: this.$apollo
         })
         if (!success) {
@@ -83,20 +96,12 @@ p.alert {
   background-color: #f2dede;
   border-color: #ebccd1;
 }
-</style>
-
-<style>
-.login-form fieldset {
-  padding: 2rem;
-  display: flex;
-  flex-direction: row;
+form {
+   max-width: 500px;
+   margin: 0 auto;
+   text-align: left;
 }
-
-.login-form fieldset div {
-  text-align: left;
-}
-
-.login-form fieldset div div {
-  margin: 20px;
+.col-form-label {
+    font-weight: 600;
 }
 </style>

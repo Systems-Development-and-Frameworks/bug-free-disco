@@ -105,7 +105,7 @@ export class UserDataSource extends DataSource {
     }
     this.users.push(newUser)
 
-    return generateAccessToken(newUser.id)
+    return generateAccessToken(newUser.id, args.name)
   }
 
   async login (args) {
@@ -125,6 +125,6 @@ export class UserDataSource extends DataSource {
       throw new UserInputError('Wrong credentials')
     }
 
-    return generateAccessToken(user.id)
+    return generateAccessToken(user.id, user.name)
   }
 }
