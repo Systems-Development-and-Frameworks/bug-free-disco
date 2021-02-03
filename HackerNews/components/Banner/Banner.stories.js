@@ -1,6 +1,6 @@
 // Banner.stories.js
 
-import Header from './Banner'
+import Banner from './Banner'
 
 export default {
   title: 'components/Banner',

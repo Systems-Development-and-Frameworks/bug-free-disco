@@ -52,17 +52,22 @@ export default {
   name: 'News',
   props: {
     news: {
-      id: '',
-      title: '',
-      votes: 0,
-      author: {
-        id: '',
-        name: '',
-        email: ''
-      },
-      voters: []
-    }
+      type: Object,
 
+      default () {
+        return {
+          id: '',
+          title: '',
+          votes: 0,
+          author: {
+            id: '',
+            name: '',
+            email: ''
+          },
+          voters: []
+        }
+      }
+    }
   },
   data () {
     return {
