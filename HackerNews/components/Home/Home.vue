@@ -1,9 +1,9 @@
 <template>
-  <div id="app">
+  <div>
     <div class="news-list">
       <div class="news-list-wrapper">
         <h1>{{ msg }}</h1>
-        <button @click="switchSortOrder">
+        <button id="switchOrderBtn" @click="switchSortOrder">
           reverse sort
         </button>
         <h2 v-if="isEmpty()">
@@ -21,7 +21,7 @@
           />
         </div>
       </div>
-      <NewsForm :news-list="newsList" @createItem="newsCreated" />
+      <NewsForm id="newsForm" :news-list="newsList" @createItem="newsCreated" />
     </div>
   </div>
 </template>
@@ -29,6 +29,8 @@
 <script>
 import News from '../News/News.vue'
 import NewsForm from '../NewsForm/NewsForm.vue'
+import { GET_POSTS } from '~/graphql/queries'
+import { WRITE } from '~/graphql/mutations'
 
 const SortOrder = {
   ASCENDING: 0,
@@ -46,10 +48,6 @@ export default {
       type: String,
       required: false,
       default: 'Welcome to Hackernews'
-    },
-    newsListInput: {
-      type: Array,
-      default: () => []
     }
   },
   data () {
@@ -63,6 +61,7 @@ export default {
       sortOrder: SortOrder.ASCENDING
     }
   },
+
   computed: {
     sortedNewsList () {
       // Sort by votes
@@ -80,9 +79,23 @@ export default {
       )
     }
   },
-  beforeMount () {
-    this.newsList = this.newsListInput
+
+  async created () {
+    try {
+      const res = await this.$apollo.query({
+        query: GET_POSTS
+      })
+      const posts = res.data.posts
+      if (!posts) {
+        this.newsList = []
+      } else {
+        this.newsList = posts
+      }
+    } catch (error) {
+      this.errors.push(error)
+    }
   },
+
   methods: {
     switchSortOrder () {
       if (this.sortOrder === SortOrder.ASCENDING) {
@@ -109,12 +122,32 @@ export default {
     newsRemoveMessage (newsTitle) {
       this.newsList = this.newsList.filter(item => item.title !== newsTitle)
     },
-    newsCreated (news) {
-      this.newsList.push({
-        title: news.title,
-        body: news.body,
-        votes: 0
-      })
+    async newsCreated (news) {
+      const title = news.title
+      this.$apollo.context = {
+        headers: { Authorization: 'Bearer ' + this.$store.state.auth.token }
+      }
+      try {
+        const res = await this.$apollo.mutate({
+          mutation: WRITE,
+          variables: { title }
+        })
+
+        const post = res.data.write
+
+        if (post) {
+          this.newsList.push({
+            id: post.id,
+            title: post.title,
+            body: '',
+            votes: 0,
+            author: post.author,
+            voters: []
+          })
+        }
+      } catch (error) {
+        this.errors.push(error)
+      }
     }
   }
 }
@@ -138,5 +171,13 @@ li {
 
 a {
   color: #42b983;
+}
+
+.news-list-wrapper div {
+  padding: 20px;
+}
+
+.news-list-wrapper button {
+  margin: 20px;
 }
 </style>

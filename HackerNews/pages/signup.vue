@@ -2,7 +2,7 @@
 <template>
   <div id="app">
     <div v-if="!isLoggedIn" class="container">
-      <LoginForm />
+      <SignUpForm />
     </div>
     <div v-else>
       <h1>You are already logged in</h1>
@@ -12,13 +12,13 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import LoginForm from '../components/Login/LoginForm'
+import SignUpForm from '../components/SignUp/SignUpForm'
 
 export default {
 
   name: 'App',
   components: {
-    LoginForm
+    SignUpForm
   },
   computed: {
     ...mapGetters('auth', ['isLoggedIn'])
