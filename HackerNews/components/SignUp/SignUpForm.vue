@@ -1,92 +1,122 @@
 <template>
-  <form class="signup-form" @submit.prevent="submit">
-    <fieldset>
-      <legend>
-        Sign up
-      </legend>
-      <div>
-        <div><label for="name">Name</label></div>
-        <div><label for="email">E-Mail</label></div>
-        <div><label for="password">Password</label></div>
-        <div><label for="rePassword">Reenter password</label></div>
-      </div>
-      <div>
-        <div>
-          <input
-            id="name"
-            v-model="formData.name"
-            type="name"
-            size="25"
-            name="name"
+  <b-card md="6" offset-md="3" title="Sign Up" class="item text-center">
+    <ValidationObserver ref="observer">
+      <b-form slot-scope="{ validate }" @submit.prevent="validate().then(handleSubmit)">
+        <ValidationProvider rules="required" name="Name">
+          <b-form-group
+            id="input-group-1"
+            slot-scope="{ valid, errors }"
+            label="Name:"
+            label-for="input-1"
           >
-        </div>
-        <div>
-          <input
-            id="email"
-            v-model="formData.email"
-            type="email"
-            size="25"
-            name="email"
+            <b-form-input
+              id="input-1"
+              v-model="name"
+              type="text"
+              placeholder="Enter your name"
+              :state="errors[0] ? false : (valid ? true : null)"
+            />
+            <b-form-invalid-feedback>
+              {{ errors[0] }}
+            </b-form-invalid-feedback>
+          </b-form-group>
+        </ValidationProvider>
+        <ValidationProvider rules="required|email" name="Email">
+          <b-form-group
+            id="input-group-2"
+            slot-scope="{ valid, errors }"
+            label="Email:"
+            label-for="input-2"
           >
-        </div>
-        <div>
-          <input
-            id="password"
-            v-model="formData.password"
-            type="password"
-            size="25"
-            name="password"
+            <b-form-input
+              id="input-2"
+              v-model="email"
+              type="email"
+              :state="errors[0] ? false : (valid ? true : null)"
+              placeholder="Enter the email"
+            />
+            <b-form-invalid-feedback>
+              {{ errors[0] }}
+            </b-form-invalid-feedback>
+          </b-form-group>
+        </ValidationProvider>
+        <ValidationProvider rules="required|min:8" name="Password" vid="password">
+          <b-form-group
+            id="input-group-3"
+            slot-scope="{ valid, errors }"
+            label="Password:"
+            label-for="input-3"
           >
-        </div>
-        <div>
-          <input
-            id="rePassword"
-            v-model="formData.rePassword"
-            type="password"
-            size="25"
-            name="rePassword"
+            <b-form-input
+              id="input-3"
+              v-model="password"
+              type="password"
+              placeholder="Enter the password"
+              :state="errors[0] ? false : (valid ? true : null)"
+            />
+            <b-form-invalid-feedback>
+              {{ errors[0] }}
+            </b-form-invalid-feedback>
+          </b-form-group>
+        </ValidationProvider>
+        <ValidationProvider rules="required|confirmed:password" name="Confirm Password">
+          <b-form-group
+            id="input-group-4"
+            slot-scope="{ valid, errors }"
+            label="Confirm Password:"
+            label-for="input-4"
           >
-        </div>
-        <div v-if="error" class="error">
-          {{ error.message }}
-        </div>
-        <div>
-          <button type="submit">
-            Sign up
-          </button>
-        </div>
-      </div>
-    </fieldset>
-  </form>
+            <b-form-input
+              id="input-4"
+              v-model="rePassword"
+              type="password"
+              placeholder="Confirm password"
+              :state="errors[0] ? false : (valid ? true : null)"
+            />
+            <b-form-invalid-feedback>
+              {{ errors[0] }}
+            </b-form-invalid-feedback>
+          </b-form-group>
+        </ValidationProvider>
+        <p v-if="error" class="alert">
+          <b>{{ error.message }}</b>
+        </p>
+        <b-button type="submit" variant="primary">
+          Sign up
+        </b-button>
+      </b-form>
+    </ValidationObserver>
+  </b-card>
 </template>
 
 <script>
 import { mapActions } from 'vuex'
+import { ValidationObserver, ValidationProvider } from 'vee-validate'
 
 export default {
+  components: {
+    ValidationObserver,
+    ValidationProvider
+  },
   data () {
     return {
       error: null,
-      formData: {
-        name: '',
-        email: '',
-        password: '',
-        rePassword: ''
-      }
+      name: '',
+      email: '',
+      password: '',
+      rePassword: ''
     }
   },
-  computed: {},
+  computed: {
+  },
   methods: {
     ...mapActions('auth', ['signup']),
-    async submit () {
+    async handleSubmit () {
       this.error = null
-      if (this.formData.password !== this.formData.rePassword) {
-        this.error = { message: 'The password does not match!' }
-        return
-      }
       try {
+        const formData = { name: this.name, email: this.email, password: this.password }
         const success = await this.signup({
-          ...this.formData,
+          ...formData,
           apollo: this.$apollo
         })
         if (!success) {
@@ -102,27 +132,18 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 p.alert {
   color: #a94442;
   background-color: #f2dede;
   border-color: #ebccd1;
 }
-</style>
-
-<style>
-.signup-form fieldset {
-  padding: 2rem;
-  display: flex;
-  flex-direction: row;
+form {
+   max-width: 500px;
+   margin: 0 auto;
+   text-align: left;
 }
-
-.signup-form fieldset div {
-  text-align: left;
-}
-
-.signup-form fieldset div div {
-  margin: 20px;
+.col-form-label {
+    font-weight: 600;
 }
 </style>

@@ -16,12 +16,18 @@ mutation write($title: String!) {
   write(post: {title: $title}){id, title, votes, author{id, name, email}}
 }`
 
+export const DELETE = gql`
+mutation delete($id: ID!) {
+  delete(id: $id){id, title, votes}
+}
+`
+
 export const UPVOTE = gql`
 mutation upvote($id: ID!) {
-  upvote(id: $id){id, votes}
+  upvote(id: $id){id, title, votes}
 }`
 
 export const DOWNVOTE = gql`
 mutation downvote($id: ID!) {
-  downvote(id: $id){id, votes}
+  downvote(id: $id){id, title, votes}
 }`

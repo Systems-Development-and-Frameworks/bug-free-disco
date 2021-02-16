@@ -1,8 +1,10 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import SignUpForm from '@/components/SignUp/SignUpForm.vue'
 import Vuex from 'vuex'
+import BootstrapVue from 'bootstrap-vue'
 
 const localVue = createLocalVue()
+localVue.use(BootstrapVue)
 localVue.use(Vuex)
 
 describe('LoginForm.vue', () => {

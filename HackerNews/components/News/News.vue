@@ -1,25 +1,55 @@
 <template>
-  <div>
-    <h1 class="text-danger">
-      {{ news.title }}({{ news.votes }})
-    </h1>
-    <div v-if="error" class="error">
-      {{ error.message }}
-    </div>
-    <p>{{ news.body }}</p>
-    <button v-if="!alreadyVoted" id="upvoteBtn" @click="upVote">
-      Upvote
-    </button>
-    <button v-if="!alreadyVoted" id="downvoteBtn" @click="downVote">
-      Downvote
-    </button>
-    <button v-if="isOwner" id="removeBtn" @click="remove">
-      Remove
-    </button>
-    <button v-if="isOwner" id="editBtn">
-      Edit
-    </button>
-  </div>
+  <b-card cols="2" cols-md="1" class="b-card-news">
+    <b-col>
+      <b-row><p>Title: {{ news.title }}</p></b-row>
+      <b-row>
+        <div class="text-left">
+          <p>Author: {{ news.author.name }}</p>
+          <p>Votes: {{ news.votes }}</p>
+        </div>
+      </b-row>
+      <b-row>
+        <div v-if="error" class="error">
+          <p class="alert">
+            {{ error.message }}
+          </p>
+        </div>
+      </b-row>
+      <b-row>
+        <div class="text-left">
+          <b-button
+            v-if="!alreadyVoted"
+            id="upvoteBtn"
+            class="action-button"
+            :title="upvoteLabel"
+            variant="success"
+            @click="upVote"
+          >
+            Upvote
+          </b-button>
+          <b-button
+            v-if="!alreadyVoted"
+            id="downvoteBtn"
+            class="action-button"
+            :title="downvoteLabel"
+            variant="warning"
+            @click="downVote"
+          >
+            Downvote
+          </b-button>
+          <b-button
+            v-if="isOwner"
+            id="removeBtn"
+            class="action-button"
+            variant="danger"
+            @click="remove"
+          >
+            {{ removeLabel }}
+          </b-button>
+        </div>
+      </b-row>
+    </b-col>
+  </b-card>
 </template>
 
 <script>
@@ -29,21 +59,31 @@ export default {
   name: 'News',
   props: {
     news: {
-      id: '',
-      title: '',
-      body: '',
-      votes: 0,
-      author: {
-        id: '',
-        name: '',
-        email: ''
-      },
-      voters: []
-    }
+      type: Object,
 
+      default () {
+        return {
+          id: '',
+          title: '',
+          votes: 0,
+          author: {
+            id: '',
+            name: '',
+            email: ''
+          },
+          voters: []
+        }
+      }
+    }
   },
   data () {
-    return { error: null }
+    return {
+      error: null,
+      upvoteLabel: 'Upvote',
+      downvoteLabel: 'Downvote',
+      removeLabel: 'Remove',
+      editLabel: 'Edit'
+    }
   },
 
   computed: {
@@ -102,5 +142,13 @@ export default {
 }
 </script>
 
-<!-- Add 'scoped' attribute to limit CSS to this component only -->
-<style scoped></style>
+<style scoped>
+p.alert {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
+.b-card-news {
+  margin: 2px 0px;
+}
+</style>

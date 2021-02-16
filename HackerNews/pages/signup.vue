@@ -1,36 +1,31 @@
-
 <template>
-  <div id="app">
-    <div v-if="!isLoggedIn" class="container">
+  <b-container class="bv-example-row">
+    <b-row v-if="!isLoggedIn">
       <SignUpForm />
-    </div>
-    <div v-else>
-      <h1>You are already logged in</h1>
-    </div>
-  </div>
+    </b-row>
+    <b-row v-else>
+      <b-col md>
+        <h1>You are already logged in</h1>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import SignUpForm from '../components/SignUp/SignUpForm'
-
 export default {
-
   name: 'App',
   components: {
     SignUpForm
   },
   computed: {
     ...mapGetters('auth', ['isLoggedIn'])
-
   },
-
   methods: {
     //   ...mapMutations('auth', ['SET_TOKEN']),
-
   }
 }
-
 </script>
 
 <style>
@@ -42,13 +37,11 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
-
 .container{
   margin-top: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-
 }
 </style>

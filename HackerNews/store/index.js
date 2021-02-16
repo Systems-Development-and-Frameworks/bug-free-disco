@@ -15,6 +15,7 @@ export const actions = {
     console.log(decoded)
     if (decoded) {
       store.commit('auth/SET_USER_ID', decoded.id)
+      store.commit('auth/SET_USER_NAME', decoded.name)
     }
   }
 }
