@@ -24,7 +24,7 @@
       <p v-if="error" class="alert">
         <b>{{ error.name }}</b>
       </p>
-      <b-button type="submit" variant="primary" id="createNews">
+      <b-button id="createNews" type="submit" variant="primary">
         Create news
       </b-button>
     </b-form>
